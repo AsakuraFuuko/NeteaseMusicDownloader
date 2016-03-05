@@ -1,0 +1,30 @@
+﻿<Window x:Class="NeteaseMusicDownloader.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NeteaseMusicDownloader.Views"
+        mc:Ignorable="d"
+        DataContext="{Binding Main,Source={StaticResource Locator}}"
+        Title="{Binding Title}" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Height="233" Width="608">
+    <Grid>
+        <Label x:Name="label" Content="Music ID" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" />
+        <TextBox x:Name="textBox" Height="23" Margin="75,0,0,171" TextWrapping="Wrap"  VerticalAlignment="Bottom" Text="{Binding MusicId}" HorizontalAlignment="Left" Width="433" VerticalContentAlignment="Center" />
+        <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="23" Margin="75,38,0,0"  VerticalAlignment="Top" Width="433" Text="{Binding TrackURL}" VerticalContentAlignment="Center" />
+        <Button x:Name="button" Content="GET" Margin="513,0,10,171" VerticalAlignment="Bottom" Command="{Binding GetTrackURLCommand}" Height="23" />
+        <Label x:Name="label1" Content="URL" HorizontalAlignment="Left" Margin="35,38,0,0" VerticalAlignment="Top" />
+        <Button x:Name="button1" Content="Down" Margin="513,38,10,0" VerticalAlignment="Top" Command="{Binding DownloadCommand}" Height="23" />
+        <Label x:Name="label2" Content="Title" HorizontalAlignment="Left" Margin="33,68,0,0" VerticalAlignment="Top" />
+        <Label x:Name="label3" Content="{Binding SongTitle}" Margin="75,68,10,0" VerticalAlignment="Top" Height="25" />
+        <Label x:Name="label4" Content="Artist" HorizontalAlignment="Left" Margin="27,98,0,0" VerticalAlignment="Top" />
+        <Label x:Name="label5" Content="{Binding SongArtist}" Margin="75,98,10,0" VerticalAlignment="Top" Height="25" />
+        <Label x:Name="label6" Content="BitRate" HorizontalAlignment="Left" Margin="17,128,0,0" VerticalAlignment="Top" />
+        <Label x:Name="label7" Content="{Binding SongBitRate}" Margin="75,128,10,0" VerticalAlignment="Top" />
+        <StatusBar Height="35" VerticalAlignment="Bottom">
+            <ProgressBar Height="10" Width="100" Value="{Binding Progress, Mode=OneWay}" Maximum="100" LargeChange="1" />
+            <Label x:Name="label8" Content="{Binding BytesReceived}" />
+            <Label x:Name="label9" Content="/" />
+            <Label x:Name="label10" Content="{Binding TotalBytesToReceive}" />
+        </StatusBar>
+    </Grid>
+</Window>
