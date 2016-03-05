@@ -45,13 +45,30 @@ namespace NeteaseMusicDownloader.Utils
 
                 song.Title = jObject.SelectToken("songs[0].name").ToString();
                 song.Artist = jObject.SelectToken("songs[0].artists[0].name").ToString();
-                song.HMucis = new Music()
-                {
-                    Name = jObject.SelectToken("songs[0].hMusic.name").ToString(),
-                    Extension = jObject.SelectToken("songs[0].hMusic.extension").ToString(),
-                    BitRate = jObject.SelectToken("songs[0].hMusic.bitrate").ToObject<int>(),
-                    dfsId = jObject.SelectToken("songs[0].hMusic.dfsId").ToString(),
-                };
+                if (jObject.SelectToken("songs[0].hMusic") != null)
+                    song.HMucis = new Music()
+                    {
+                        Name = jObject.SelectToken("songs[0].hMusic.name").ToString(),
+                        Extension = jObject.SelectToken("songs[0].hMusic.extension").ToString(),
+                        BitRate = jObject.SelectToken("songs[0].hMusic.bitrate").ToObject<int>(),
+                        dfsId = jObject.SelectToken("songs[0].hMusic.dfsId").ToString(),
+                    };
+                if (jObject.SelectToken("songs[0].mMusic") != null)
+                    song.MMucis = new Music()
+                    {
+                        Name = jObject.SelectToken("songs[0].mMusic.name").ToString(),
+                        Extension = jObject.SelectToken("songs[0].mMusic.extension").ToString(),
+                        BitRate = jObject.SelectToken("songs[0].mMusic.bitrate").ToObject<int>(),
+                        dfsId = jObject.SelectToken("songs[0].mMusic.dfsId").ToString(),
+                    };
+                if (jObject.SelectToken("songs[0].lMusic") != null)
+                    song.LMucis = new Music()
+                    {
+                        Name = jObject.SelectToken("songs[0].lMusic.name").ToString(),
+                        Extension = jObject.SelectToken("songs[0].lMusic.extension").ToString(),
+                        BitRate = jObject.SelectToken("songs[0].lMusic.bitrate").ToObject<int>(),
+                        dfsId = jObject.SelectToken("songs[0].lMusic.dfsId").ToString(),
+                    };
             }
         }
     }

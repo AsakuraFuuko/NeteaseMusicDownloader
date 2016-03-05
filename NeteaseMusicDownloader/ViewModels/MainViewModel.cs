@@ -117,13 +117,13 @@ namespace NeteaseMusicDownloader.ViewModels
             if (IsInDesignMode)
             {
                 // Code runs in Blend --> create design time data.
-                Title = "标题";
+                Title = "Netease Music Downloader";
                 MusicId = "http://music.163.com/#/song?id=29775130";
             }
             else
             {
                 // Code runs "for real"
-                Title = "标题";
+                Title = "Netease Music Downloader";
                 MusicId = "http://music.163.com/#/song?id=29775130";
                 Progress = 0;
                 GetTrackURLCommand = new RelayCommand(() =>
