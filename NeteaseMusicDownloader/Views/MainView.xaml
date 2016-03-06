@@ -4,27 +4,80 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NeteaseMusicDownloader.Views"
+        xmlns:cachedImage="clr-namespace:CachedImage;assembly=CachedImage"
+        xmlns:util ="clr-namespace:NeteaseMusicDownloader.Utils"
         mc:Ignorable="d"
         DataContext="{Binding Main,Source={StaticResource Locator}}"
-        Title="{Binding Title}" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Height="233" Width="608">
+        Title="{Binding Title}" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Height="450" Width="600">
     <Grid>
-        <Label x:Name="label" Content="Music ID" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" />
-        <TextBox x:Name="textBox" Height="23" Margin="75,0,0,171" TextWrapping="Wrap"  VerticalAlignment="Bottom" Text="{Binding MusicId}" HorizontalAlignment="Left" Width="433" VerticalContentAlignment="Center" />
-        <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="23" Margin="75,38,0,0"  VerticalAlignment="Top" Width="433" Text="{Binding TrackURL}" VerticalContentAlignment="Center" />
-        <Button x:Name="button" Content="GET" Margin="513,0,10,171" VerticalAlignment="Bottom" Command="{Binding GetTrackURLCommand}" Height="23" />
-        <Label x:Name="label1" Content="URL" HorizontalAlignment="Left" Margin="35,38,0,0" VerticalAlignment="Top" />
-        <Button x:Name="button1" Content="Down" Margin="513,38,10,0" VerticalAlignment="Top" Command="{Binding DownloadCommand}" Height="23" />
-        <Label x:Name="label2" Content="Title" HorizontalAlignment="Left" Margin="33,68,0,0" VerticalAlignment="Top" />
-        <Label x:Name="label3" Content="{Binding SongTitle}" Margin="75,68,10,0" VerticalAlignment="Top" Height="25" />
-        <Label x:Name="label4" Content="Artist" HorizontalAlignment="Left" Margin="27,98,0,0" VerticalAlignment="Top" />
-        <Label x:Name="label5" Content="{Binding SongArtist}" Margin="75,98,10,0" VerticalAlignment="Top" Height="25" />
-        <Label x:Name="label6" Content="BitRate" HorizontalAlignment="Left" Margin="17,128,0,0" VerticalAlignment="Top" />
-        <Label x:Name="label7" Content="{Binding SongBitRate}" Margin="75,128,10,0" VerticalAlignment="Top" />
-        <StatusBar Height="35" VerticalAlignment="Bottom">
-            <ProgressBar Height="10" Width="100" Value="{Binding Progress, Mode=OneWay}" Maximum="100" LargeChange="1" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="40*" />
+            <ColumnDefinition Width="220*" />
+            <ColumnDefinition Width="40*" />
+            <ColumnDefinition Width="10" />
+        </Grid.ColumnDefinitions>
+        <Label x:Name="label" Content="Music Url" Margin="1" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" />
+        <TextBox x:Name="textBox" Margin="1" TextWrapping="Wrap" Text="{Binding MusicUrl}" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="2" />
+        <TextBox x:Name="textBox1" Margin="1" Text="{Binding TrackUrl}" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="3" />
+        <Button x:Name="button" Content="Get" Margin="1" Command="{Binding GetTrackURLCommand}" Grid.Column="3" Grid.Row="2" />
+        <Label x:Name="label1" Content="URL" Margin="1" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center" />
+        <Button x:Name="button1" Content="Down" Margin="1" Command="{Binding DownloadCommand}" Grid.Column="3" Grid.Row="3" />
+        <Label x:Name="label2" Content="Title" Margin="1" Grid.Row="4" Grid.Column="1" VerticalContentAlignment="Center" />
+        <Label x:Name="label3" Content="{Binding SongTitle}" Margin="1" Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
+        <Label x:Name="label4" Content="Artist" Margin="1" Grid.Row="5" Grid.Column="1" VerticalContentAlignment="Center" />
+        <Label x:Name="label5" Content="{Binding SongArtist}" Margin="1" Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
+        <Label x:Name="label6" Content="BitRate" Margin="1" Grid.Row="6" Grid.Column="1" VerticalContentAlignment="Center" />
+        <Label x:Name="label7" Content="{Binding SongBitRate}" Margin="1" Grid.Column="2" Grid.Row="6" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
+        <StatusBar VerticalAlignment="Bottom" Grid.ColumnSpan="5" Grid.Row="9">
+            <ProgressBar Height="14" Width="100" Value="{Binding Progress, Mode=OneWay}" Maximum="100" LargeChange="1" />
             <Label x:Name="label8" Content="{Binding BytesReceived}" />
             <Label x:Name="label9" Content="/" />
             <Label x:Name="label10" Content="{Binding TotalBytesToReceive}" />
         </StatusBar>
+        <Button x:Name="button2" Content="Get" Grid.Column="3" Margin="1" Grid.Row="1" Command="{Binding GetPlaylistCommand}" />
+        <Label x:Name="label11" Content="PlayList Url" Grid.Column="1" Margin="1" Grid.Row="1" VerticalContentAlignment="Center" />
+        <TextBox x:Name="textBox2" Grid.Column="2"  Margin="1" Grid.Row="1" Text="{Binding PlaylistUrl}" VerticalContentAlignment="Center" />
+        <ListView x:Name="listBox" Grid.ColumnSpan="3" Grid.Column="1" Margin="1" Grid.Row="7" ItemsSource="{Binding SongCollection}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="27" />
+                            <RowDefinition Height="27" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="54" />
+                            <ColumnDefinition Width="45" />
+                            <ColumnDefinition Width="100*" />
+                            <ColumnDefinition Width="60" />
+                        </Grid.ColumnDefinitions>
+                        <cachedImage:Image ImageUrl="{Binding AlbumImage}" Width="50" Height="50" Grid.RowSpan="2" Grid.Row="0" Grid.Column="0" Margin="2" />
+                        <TextBlock Text="Artist: " Grid.Row="0" Grid.Column="1" Margin="3" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Artist}" FontWeight="Bold" Grid.Row="0" Grid.Column="2" Margin="3" VerticalAlignment="Center" />
+                        <TextBlock Text="Title: " Grid.Row="1" Grid.Column="1" Margin="3" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Title}" FontWeight="Bold" Grid.Row="3" Grid.Column="2" Margin="3" VerticalAlignment="Center" />
+                        <Button x:Name="button3" Content="Down" Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" Margin="2" Command="{Binding PlaylistDownloadCommand}" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Window>

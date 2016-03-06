@@ -11,6 +11,8 @@ namespace NeteaseMusicDownloader.Utils
     {
         public event EventHandler<DownloadProgressChangedEventArgs> DownloadProgressChanged;
 
+        public bool DownloadCompleted = false;
+
         // Download a file
         public async void Get(string url, string fileName)
         {
@@ -18,8 +20,14 @@ namespace NeteaseMusicDownloader.Utils
             using (WebClient webClient = new WebClient())
             {
                 webClient.DownloadProgressChanged += (sender, args) => OnProgressChanged(args);
+                webClient.DownloadDataCompleted += WebClient_DownloadDataCompleted;
                 await webClient.DownloadFileTaskAsync(uri, fileName);
             }
+        }
+
+        private void WebClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
+        {
+            DownloadCompleted = true;
         }
 
         // Notify when progress changes

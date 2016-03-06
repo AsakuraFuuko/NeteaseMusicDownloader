@@ -2,7 +2,11 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using NeteaseMusicDownloader.Models;
 using NeteaseMusicDownloader.Utils;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 
 namespace NeteaseMusicDownloader.ViewModels
@@ -21,32 +25,54 @@ namespace NeteaseMusicDownloader.ViewModels
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private string _musicId;
-        private string _trackURL;
+        private string _musicUrl;
+        private string _playlistUrl;
+        private string _trackUrl;
         private int _progress = 0;
         private long _bytesReceived = 0;
         private long _totalBytesToReceive = 0;
+        private ObservableCollection<Song> _songCollection = new ObservableCollection<Song>();
 
         private Song _song = new Song();
         public string Title { get; set; }
 
-        public string MusicId
+        public string PlaylistUrl
         {
-            get { return _musicId; }
+            get { return _playlistUrl; }
             set
             {
-                _musicId = value;
-                RaisePropertyChanged("MusicId");
+                _playlistUrl = value;
+                RaisePropertyChanged("PlaylistUrl");
             }
         }
 
-        public string TrackURL
+        public string MusicUrl
         {
-            get { return _trackURL; }
+            get { return _musicUrl; }
             set
             {
-                _trackURL = value;
+                _musicUrl = value;
+                RaisePropertyChanged("MusicUrl");
+            }
+        }
+
+        public string TrackUrl
+        {
+            get { return _trackUrl; }
+            set
+            {
+                _trackUrl = value;
                 RaisePropertyChanged("TrackURL");
+            }
+        }
+
+        public ObservableCollection<Song> SongCollection
+        {
+            get { return _songCollection; }
+            set
+            {
+                _songCollection = value;
+                RaisePropertyChanged("SongCollection");
             }
         }
 
@@ -63,11 +89,6 @@ namespace NeteaseMusicDownloader.ViewModels
         public string SongBitRate
         {
             get { return _song.HMucis != null ? _song.HMucis.BitRate / 1000 + "k" : ""; }
-        }
-
-        public string SongFileName
-        {
-            get { return _song.HMucis != null ? string.Format("{0} - {1}.{2}", _song.Artist, _song.Title, _song.Extension) : "music.mp3"; }
         }
 
         public int Progress
@@ -112,25 +133,51 @@ namespace NeteaseMusicDownloader.ViewModels
             private set;
         }
 
+        public RelayCommand GetPlaylistCommand
+        {
+            get;
+            private set;
+        }
+
         public MainViewModel()
         {
             if (IsInDesignMode)
             {
                 // Code runs in Blend --> create design time data.
                 Title = "Netease Music Downloader";
-                MusicId = "http://music.163.com/#/song?id=29775130";
+                MusicUrl = "http://music.163.com/#/song?id=29775130";
+                PlaylistUrl = "http://music.163.com/#/my/m/music/playlist?id=6435531";
+                SongCollection.Add(new Song()
+                {
+                    Title = "Clover Heart's",
+                    Artist = "˜YÔ­¤æ¤¤",
+                    AlbumImage = "http://p4.music.126.net/n189nEFRefNaucKD8akNQw==/7886796906449604.jpg",
+                });
+                SongCollection.Add(new Song()
+                {
+                    Title = "Clover Heart's",
+                    Artist = "˜YÔ­¤æ¤¤",
+                    AlbumImage = "http://p4.music.126.net/n189nEFRefNaucKD8akNQw==/7886796906449604.jpg",
+                });
+                SongCollection.Add(new Song()
+                {
+                    Title = "Clover Heart's",
+                    Artist = "˜YÔ­¤æ¤¤",
+                    AlbumImage = "http://p4.music.126.net/n189nEFRefNaucKD8akNQw==/7886796906449604.jpg",
+                });
             }
             else
             {
                 // Code runs "for real"
                 Title = "Netease Music Downloader";
-                MusicId = "http://music.163.com/#/song?id=29775130";
+                MusicUrl = "http://music.163.com/#/song?id=29775130";
+                PlaylistUrl = "http://music.163.com/#/my/m/music/playlist?id=6435531";
                 Progress = 0;
                 GetTrackURLCommand = new RelayCommand(() =>
                 {
-                    _song.parseUrl(MusicId);
+                    _song.parseUrl(MusicUrl);
                     NeteaseUtil.GetSongDetail(ref _song);
-                    TrackURL = NeteaseUtil.GetTrackURL(_song.HMucis.dfsId);
+                    TrackUrl = NeteaseUtil.GetTrackURL(_song.HMucis.dfsId);
                     RaisePropertyChanged("SongTitle");
                     RaisePropertyChanged("SongArtist");
                     RaisePropertyChanged("SongBitRate");
@@ -138,7 +185,7 @@ namespace NeteaseMusicDownloader.ViewModels
 
                 DownloadCommand = new RelayCommand(() =>
                 {
-                    if (string.IsNullOrWhiteSpace(TrackURL))
+                    if (string.IsNullOrWhiteSpace(TrackUrl))
                         return;
                     var downloader = Application.Current.Resources["MyDownload"] as DownloadUtils;
                     downloader.DownloadProgressChanged += (sender, args) =>
@@ -147,7 +194,37 @@ namespace NeteaseMusicDownloader.ViewModels
                         BytesReceived = args.BytesReceived;
                         TotalBytesToReceive = args.TotalBytesToReceive;
                     };
-                    downloader.Get(TrackURL, Path.Combine("music", SongFileName));
+                    downloader.Get(TrackUrl, Path.Combine("music", FileUtils.GetSafeFileName(_song.SongFileName)));
+                });
+
+                GetPlaylistCommand = new RelayCommand(async () =>
+                {
+                    if (string.IsNullOrWhiteSpace(PlaylistUrl))
+                        return;
+                    var playlistId = "";
+                    var reg = new Regex(@"id=(\d*)").Match(PlaylistUrl);
+                    if (reg.Success)
+                    {
+                        playlistId = reg.Groups[1].Value;
+                        foreach (var song in await NeteaseUtil.GetSongsFromPlaylist(playlistId))
+                        {
+                            song.PlaylistDownloadCommand = new RelayCommand(() =>
+                            {
+                                string trackUrl = NeteaseUtil.GetTrackURL(song.DfsId);
+                                if (string.IsNullOrWhiteSpace(trackUrl))
+                                    return;
+                                var downloader = Application.Current.Resources["MyDownload"] as DownloadUtils;
+                                downloader.DownloadProgressChanged += (sender, args) =>
+                                {
+                                    Progress = args.ProgressPercentage;
+                                    BytesReceived = args.BytesReceived;
+                                    TotalBytesToReceive = args.TotalBytesToReceive;
+                                };
+                                downloader.Get(trackUrl, Path.Combine("music", FileUtils.GetSafeFileName(song.SongFileName)));
+                            });
+                            SongCollection.Add(song);
+                        }
+                    }
                 });
             }
         }

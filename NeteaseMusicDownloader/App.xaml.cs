@@ -18,6 +18,7 @@ namespace NeteaseMusicDownloader
     public partial class App : Application
     {
         private const string _downloadFolder = "music";
+        //private const string _cacheFolder = "cache";
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -28,15 +29,21 @@ namespace NeteaseMusicDownloader
                 new RoutedEventHandler(SelectAllText));
             EventManager.RegisterClassHandler(typeof(TextBox), TextBox.MouseDoubleClickEvent,
                 new RoutedEventHandler(SelectAllText));
+            CreateFolder();
+            CachedImage.FileCache.AppCacheMode = CachedImage.FileCache.CacheMode.WinINet;
             base.OnStartup(e);
         }
 
-        private void CreateDownloadFolder()
+        private void CreateFolder()
         {
             if (!Directory.Exists(_downloadFolder))
             {
                 Directory.CreateDirectory(_downloadFolder);
             }
+            //if (!Directory.Exists(_cacheFolder))
+            //{
+            //    Directory.CreateDirectory(_cacheFolder);
+            //}
         }
 
         private void SelectivelyIgnoreMouseButton(object sender, MouseButtonEventArgs e)
