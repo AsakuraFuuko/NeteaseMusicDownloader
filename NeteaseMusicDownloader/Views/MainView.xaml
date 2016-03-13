@@ -47,6 +47,9 @@
             <Label x:Name="label8" Content="{Binding BytesReceived}" />
             <Label x:Name="label9" Content="/" />
             <Label x:Name="label10" Content="{Binding TotalBytesToReceive}" />
+            <StatusBarItem HorizontalContentAlignment="Right">
+                <Label x:Name="label21" Content="{Binding NowPlaying}" />
+            </StatusBarItem>
         </StatusBar>
         <Button x:Name="button2" Content="Get" Grid.Column="3" Margin="1" Grid.Row="1" Command="{Binding GetPlaylistCommand}" />
         <Label x:Name="label11" Content="PlayList Url" Grid.Column="1" Margin="1" Grid.Row="1" VerticalContentAlignment="Center" />
@@ -71,13 +74,23 @@
                             <ColumnDefinition Width="60" />
                             <ColumnDefinition Width="60" />
                         </Grid.ColumnDefinitions>
-                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Background="#00000000" Foreground="#4CBAFFC7" Grid.ZIndex="0" Width="Auto" />
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Grid.ZIndex="0" Width="Auto" Background="{x:Null}" BorderBrush="{x:Null}">
+                            <ProgressBar.Foreground>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="#4C79FF92" Offset="0.794" />
+                                    <GradientStop Color="#4CFFFFFF" Offset="1" />
+                                    <GradientStop Color="#4CFFFFFF" />
+                                    <GradientStop Color="#7F7CFF94" Offset="0.629" />
+                                </LinearGradientBrush>
+                            </ProgressBar.Foreground>
+                        </ProgressBar>
                         <cachedImage:Image ImageUrl="{Binding AlbumImage}" Width="50" Height="50" Grid.RowSpan="2" Grid.Row="0" Grid.Column="0" Margin="2" Grid.ZIndex="1" />
                         <TextBlock Text="Artist: " Grid.Row="0" Grid.Column="1" Margin="3" VerticalAlignment="Center" Grid.ZIndex="1" />
                         <TextBlock Text="{Binding Artist}" FontWeight="Bold" Grid.Row="0" Grid.Column="2" Margin="3" VerticalAlignment="Center" x:Name="txtAtrist" Grid.ZIndex="1" />
                         <TextBlock Text="Title: " Grid.Row="1" Grid.Column="1" Margin="3" VerticalAlignment="Center" Grid.ZIndex="1" />
                         <TextBlock Text="{Binding Title}" FontWeight="Bold" Grid.Row="3" Grid.Column="2" Margin="3" VerticalAlignment="Center" x:Name="txtTitle" Grid.ZIndex="1" />
-                        <Button x:Name="button3" Content="Down" Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" Margin="2" Command="{Binding Source={StaticResource Locator}, Path=Main.PlaylistDownloadCommand}" CommandParameter="{Binding}" Grid.ZIndex="1" />
+                        <Button x:Name="button3" Content="Down" Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" Margin="2" Command="{Binding Source={StaticResource Locator}, Path=Main.PlaylistDownloadCommand}" CommandParameter="{Binding}" Grid.ZIndex="1" Background="#7FDDDDDD" />
+                        <Button x:Name="button4" Content="{Binding PlayStatus}" Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" Margin="2" Command="{Binding Source={StaticResource Locator}, Path=Main.ListenCommand}" CommandParameter="{Binding}" Grid.ZIndex="1" Background="#7FDDDDDD" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

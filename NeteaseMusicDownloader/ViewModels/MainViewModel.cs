@@ -3,11 +3,13 @@ using GalaSoft.MvvmLight.Command;
 using NeteaseMusicDownloader.Models;
 using NeteaseMusicDownloader.Utils;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
+using Un4seen.Bass;
 
 namespace NeteaseMusicDownloader.ViewModels
 {
@@ -25,13 +27,18 @@ namespace NeteaseMusicDownloader.ViewModels
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        readonly private string _title = "Netease Music Downloader";
         private string _musicUrl;
         private string _playlistUrl;
         private string _trackUrl;
         private int _progress = 0;
-        private long _bytesReceived = 0;
-        private long _totalBytesToReceive = 0;
+        private string _bytesReceived = "0";
+        private string _totalBytesToReceive = "0";
+        private Song _currentPlaySong = null;
+        private AudioPlayback audioPlayback;
+        private string _nowPlaying = "";
         private ObservableCollection<Song> _songCollection = new ObservableCollection<Song>();
+        private BASSTimer timer = new BASSTimer(1000);
 
         private Song _song = new Song();
         public string Title { get; set; }
@@ -101,7 +108,7 @@ namespace NeteaseMusicDownloader.ViewModels
             }
         }
 
-        public long BytesReceived
+        public string BytesReceived
         {
             get { return _bytesReceived; }
             private set
@@ -111,7 +118,7 @@ namespace NeteaseMusicDownloader.ViewModels
             }
         }
 
-        public long TotalBytesToReceive
+        public string TotalBytesToReceive
         {
             get { return _totalBytesToReceive; }
             private set
@@ -121,7 +128,28 @@ namespace NeteaseMusicDownloader.ViewModels
             }
         }
 
-        public Song CurrentDownload { get; set; }
+        public string NowPlaying
+        {
+            get { return _nowPlaying; }
+            private set
+            {
+                _nowPlaying = value;
+                RaisePropertyChanged("NowPlaying");
+            }
+        }
+
+        public Song CurrentPlaySong
+        {
+            get { return _currentPlaySong; }
+            private set
+            {
+                if (_currentPlaySong != value)
+                {
+                    _currentPlaySong = value;
+                    RaisePropertyChanged("CurrentPlaySong");
+                }
+            }
+        }
 
         public RelayCommand GetTrackURLCommand
         {
@@ -147,12 +175,18 @@ namespace NeteaseMusicDownloader.ViewModels
             private set;
         }
 
+        public RelayCommand<Song> ListenCommand
+        {
+            get;
+            private set;
+        }
+
         public MainViewModel()
         {
             if (IsInDesignMode)
             {
                 // Code runs in Blend --> create design time data.
-                Title = "Netease Music Downloader";
+                Title = _title;
                 MusicUrl = "http://music.163.com/#/song?id=29775130";
                 PlaylistUrl = "http://music.163.com/#/my/m/music/playlist?id=6435531";
                 SongCollection.Add(new Song()
@@ -177,10 +211,18 @@ namespace NeteaseMusicDownloader.ViewModels
             else
             {
                 // Code runs "for real"
-                Title = "Netease Music Downloader";
+                Title = _title;
                 MusicUrl = "http://music.163.com/#/song?id=29775130";
                 PlaylistUrl = "http://music.163.com/#/my/m/music/playlist?id=6435531";
                 Progress = 0;
+                audioPlayback = new AudioPlayback();
+
+                timer.Tick += (sender, args) =>
+                {
+                    Title = string.Format("{0} {1}/{2}", _title, audioPlayback.CurrentLength, audioPlayback.TotalLength);
+                    RaisePropertyChanged("Title");
+                };
+
                 GetTrackURLCommand = new RelayCommand(() =>
                 {
                     _song.parseUrl(MusicUrl);
@@ -199,8 +241,8 @@ namespace NeteaseMusicDownloader.ViewModels
                     downloader.DownloadProgressChanged += (sender, args) =>
                     {
                         Progress = args.ProgressPercentage;
-                        BytesReceived = args.BytesReceived;
-                        TotalBytesToReceive = args.TotalBytesToReceive;
+                        BytesReceived = args.BytesReceived.ToString();
+                        TotalBytesToReceive = args.TotalBytesToReceive.ToString();
                     };
                     downloader.Get(TrackUrl, Path.Combine("music", FileUtils.GetSafeFileName(_song.SongFileName)));
                 });
@@ -214,6 +256,7 @@ namespace NeteaseMusicDownloader.ViewModels
                     if (reg.Success)
                     {
                         playlistId = reg.Groups[1].Value;
+                        SongCollection.Clear();
                         foreach (var song in await NeteaseUtil.GetSongsFromPlaylist(playlistId))
                         {
                             SongCollection.Add(song);
@@ -230,10 +273,39 @@ namespace NeteaseMusicDownloader.ViewModels
                     downloader.DownloadProgressChanged += (sender, args) =>
                     {
                         song.Progress = args.ProgressPercentage;
-                        BytesReceived = args.BytesReceived;
-                        TotalBytesToReceive = args.TotalBytesToReceive;
+                        BytesReceived = args.BytesReceived.ToString();
+                        TotalBytesToReceive = args.TotalBytesToReceive.ToString();
                     };
                     downloader.Get(trackUrl, Path.Combine("music", FileUtils.GetSafeFileName(song.SongFileName)));
+                });
+
+                ListenCommand = new RelayCommand<Song>((song) =>
+                {
+                    string trackUrl = NeteaseUtil.GetTrackURL(song.DfsId);
+                    if (string.IsNullOrWhiteSpace(trackUrl))
+                        return;
+                    if (song.PlayStatus == PlayStatus.Play)
+                    {
+                        if (CurrentPlaySong != null && CurrentPlaySong != song)
+                        {
+                            audioPlayback.Stop();
+                            CurrentPlaySong.PlayStatus = PlayStatus.Play;
+                        }
+                        audioPlayback.Load(trackUrl);
+                        audioPlayback.Play();
+                        CurrentPlaySong = song;
+                        NowPlaying = string.Format("Now Playing {0} - {1}", song.Artist, song.Title);
+                        timer.Enabled = true;
+                        timer.Start();
+                        song.PlayStatus = PlayStatus.Stop;
+                    }
+                    else
+                    {
+                        audioPlayback.Stop();
+                        NowPlaying = "";
+                        song.PlayStatus = PlayStatus.Play;
+                        //timer.Enabled = false;
+                    }
                 });
             }
         }

@@ -16,6 +16,7 @@ namespace NeteaseMusicDownloader.Models
     public class Song : ObservableObject
     {
         private int _progress = 0;
+        private PlayStatus _playStatus = PlayStatus.Play;
 
         public void parseUrl(string url)
         {
@@ -106,5 +107,17 @@ namespace NeteaseMusicDownloader.Models
         {
             get { return string.Format("{0} - {1}.{2}", Artist, Title, Extension); }
         }
+
+        public PlayStatus PlayStatus
+        {
+            get { return _playStatus; }
+            set
+            {
+                _playStatus = value;
+                RaisePropertyChanged("PlayStatus");
+            }
+        }
     }
+
+    public enum PlayStatus { Play, Stop }
 }

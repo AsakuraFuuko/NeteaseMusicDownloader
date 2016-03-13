@@ -35,6 +35,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AudioObjects, Version=1.0.0.38823, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AudioObjects.1.0.0.38823\lib\net45\AudioObjects.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Bass.Net, Version=2.4.11.1, Culture=neutral, PublicKeyToken=b7566c273e6ef480, processorArchitecture=MSIL" />
+    <Reference Include="BASS.NET.Objects, Version=1.0.5242.31312, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BASS.NET.Objects.1.0.5242.31312\lib\net45\BASS.NET.Objects.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="CachedImage, Version=0.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CachedImage.0.1.7.0\lib\net45\CachedImage.dll</HintPath>
       <Private>True</Private>
@@ -89,6 +98,7 @@
     </Compile>
     <Compile Include="Models\Music.cs" />
     <Compile Include="Models\Song.cs" />
+    <Compile Include="Utils\AudioPlayback.cs" />
     <Compile Include="Utils\DownloadUtils.cs" />
     <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\NeteaseUtil.cs" />
