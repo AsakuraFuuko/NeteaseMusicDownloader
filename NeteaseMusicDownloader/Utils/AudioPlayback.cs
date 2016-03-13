@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Un4seen.Bass;
 
 namespace NeteaseMusicDownloader.Utils
@@ -17,7 +18,6 @@ namespace NeteaseMusicDownloader.Utils
             Stop();
             CloseFile();
             Init();
-            Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_GVOL_STREAM, 8000);
         }
 
         public void Load(string fileName)
@@ -29,7 +29,16 @@ namespace NeteaseMusicDownloader.Utils
         {
             if (!BassHelper.IsInitialized)
             {
-                BassHelper.Initialize();
+                try
+                {
+                    BassHelper.Initialize();
+                    Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_GVOL_STREAM, 8000);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    Application.Current.Shutdown();
+                }
             }
         }
 
