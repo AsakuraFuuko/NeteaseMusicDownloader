@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using NeteaseMusicDownloader.Utils;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,10 @@ using System.Windows;
 
 namespace NeteaseMusicDownloader.Models
 {
-    public class Song
+    public class Song : ObservableObject
     {
+        private int _progress = 0;
+
         public void parseUrl(string url)
         {
             //preg_match('#http://music.163.com/\#/song\?id=(\d+)#i', $url, $matches)
@@ -89,15 +92,19 @@ namespace NeteaseMusicDownloader.Models
 
         public Music LMucis { get; set; }
 
+        public int Progress
+        {
+            get { return _progress; }
+            set
+            {
+                _progress = value;
+                RaisePropertyChanged("Progress");
+            }
+        }
+
         public string SongFileName
         {
             get { return string.Format("{0} - {1}.{2}", Artist, Title, Extension); }
-        }
-
-        public RelayCommand PlaylistDownloadCommand
-        {
-            get;
-            set;
         }
     }
 }

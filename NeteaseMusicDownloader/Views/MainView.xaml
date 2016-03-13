@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NeteaseMusicDownloader.Views"
+        xmlns:vm="clr-namespace:NeteaseMusicDownloader.ViewModels"
         xmlns:cachedImage="clr-namespace:CachedImage;assembly=CachedImage"
         xmlns:util ="clr-namespace:NeteaseMusicDownloader.Utils"
         mc:Ignorable="d"
@@ -50,7 +51,7 @@
         <Button x:Name="button2" Content="Get" Grid.Column="3" Margin="1" Grid.Row="1" Command="{Binding GetPlaylistCommand}" />
         <Label x:Name="label11" Content="PlayList Url" Grid.Column="1" Margin="1" Grid.Row="1" VerticalContentAlignment="Center" />
         <TextBox x:Name="textBox2" Grid.Column="2"  Margin="1" Grid.Row="1" Text="{Binding PlaylistUrl}" VerticalContentAlignment="Center" />
-        <ListView x:Name="listBox" Grid.ColumnSpan="3" Grid.Column="1" Margin="1" Grid.Row="7" ItemsSource="{Binding SongCollection}">
+        <ListView x:Name="listView1" Grid.ColumnSpan="3" Grid.Column="1" Margin="1" Grid.Row="7" ItemsSource="{Binding SongCollection}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -65,16 +66,18 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="54" />
-                            <ColumnDefinition Width="45" />
-                            <ColumnDefinition Width="100*" />
+                            <ColumnDefinition Width="46" />
+                            <ColumnDefinition Width="310" />
+                            <ColumnDefinition Width="60" />
                             <ColumnDefinition Width="60" />
                         </Grid.ColumnDefinitions>
-                        <cachedImage:Image ImageUrl="{Binding AlbumImage}" Width="50" Height="50" Grid.RowSpan="2" Grid.Row="0" Grid.Column="0" Margin="2" />
-                        <TextBlock Text="Artist: " Grid.Row="0" Grid.Column="1" Margin="3" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding Artist}" FontWeight="Bold" Grid.Row="0" Grid.Column="2" Margin="3" VerticalAlignment="Center" />
-                        <TextBlock Text="Title: " Grid.Row="1" Grid.Column="1" Margin="3" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding Title}" FontWeight="Bold" Grid.Row="3" Grid.Column="2" Margin="3" VerticalAlignment="Center" />
-                        <Button x:Name="button3" Content="Down" Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" Margin="2" Command="{Binding PlaylistDownloadCommand}" />
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Background="#00000000" Foreground="#4CBAFFC7" Grid.ZIndex="0" Width="Auto" />
+                        <cachedImage:Image ImageUrl="{Binding AlbumImage}" Width="50" Height="50" Grid.RowSpan="2" Grid.Row="0" Grid.Column="0" Margin="2" Grid.ZIndex="1" />
+                        <TextBlock Text="Artist: " Grid.Row="0" Grid.Column="1" Margin="3" VerticalAlignment="Center" Grid.ZIndex="1" />
+                        <TextBlock Text="{Binding Artist}" FontWeight="Bold" Grid.Row="0" Grid.Column="2" Margin="3" VerticalAlignment="Center" x:Name="txtAtrist" Grid.ZIndex="1" />
+                        <TextBlock Text="Title: " Grid.Row="1" Grid.Column="1" Margin="3" VerticalAlignment="Center" Grid.ZIndex="1" />
+                        <TextBlock Text="{Binding Title}" FontWeight="Bold" Grid.Row="3" Grid.Column="2" Margin="3" VerticalAlignment="Center" x:Name="txtTitle" Grid.ZIndex="1" />
+                        <Button x:Name="button3" Content="Down" Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" Margin="2" Command="{Binding Source={StaticResource Locator}, Path=Main.PlaylistDownloadCommand}" CommandParameter="{Binding}" Grid.ZIndex="1" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

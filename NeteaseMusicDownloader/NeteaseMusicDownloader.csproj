@@ -91,8 +91,8 @@
     <Compile Include="Models\Song.cs" />
     <Compile Include="Utils\DownloadUtils.cs" />
     <Compile Include="Utils\FileUtils.cs" />
-    <Compile Include="Utils\MyTruncateConverter.cs" />
     <Compile Include="Utils\NeteaseUtil.cs" />
+    <Compile Include="Utils\OutputToEllipsisDisplayConverter.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="Views\MainView.xaml.cs">

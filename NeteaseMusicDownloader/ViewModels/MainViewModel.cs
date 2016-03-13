@@ -1,4 +1,4 @@
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using NeteaseMusicDownloader.Models;
 using NeteaseMusicDownloader.Utils;
@@ -121,6 +121,8 @@ namespace NeteaseMusicDownloader.ViewModels
             }
         }
 
+        public Song CurrentDownload { get; set; }
+
         public RelayCommand GetTrackURLCommand
         {
             get;
@@ -139,6 +141,12 @@ namespace NeteaseMusicDownloader.ViewModels
             private set;
         }
 
+        public RelayCommand<Song> PlaylistDownloadCommand
+        {
+            get;
+            private set;
+        }
+
         public MainViewModel()
         {
             if (IsInDesignMode)
@@ -150,19 +158,19 @@ namespace NeteaseMusicDownloader.ViewModels
                 SongCollection.Add(new Song()
                 {
                     Title = "Clover Heart's",
-                    Artist = "�Yԭ�椤",
+                    Artist = "榊原ゆい",
                     AlbumImage = "http://p4.music.126.net/n189nEFRefNaucKD8akNQw==/7886796906449604.jpg",
                 });
                 SongCollection.Add(new Song()
                 {
-                    Title = "Clover Heart's",
-                    Artist = "�Yԭ�椤",
+                    Title = "サクラ サクラ (Instrumental With 尺八・三味线) - instrumental",
+                    Artist = "榊原ゆい",
                     AlbumImage = "http://p4.music.126.net/n189nEFRefNaucKD8akNQw==/7886796906449604.jpg",
                 });
                 SongCollection.Add(new Song()
                 {
-                    Title = "Clover Heart's",
-                    Artist = "�Yԭ�椤",
+                    Title = "キミの隣りで...(絶体絶命都市3 ─壊れゆく街と彼女の歌─)",
+                    Artist = "榊原ゆい",
                     AlbumImage = "http://p4.music.126.net/n189nEFRefNaucKD8akNQw==/7886796906449604.jpg",
                 });
             }
@@ -177,7 +185,7 @@ namespace NeteaseMusicDownloader.ViewModels
                 {
                     _song.parseUrl(MusicUrl);
                     NeteaseUtil.GetSongDetail(ref _song);
-                    TrackUrl = NeteaseUtil.GetTrackURL(_song.HMucis.dfsId);
+                    TrackUrl = NeteaseUtil.GetTrackURL(_song.DfsId);
                     RaisePropertyChanged("SongTitle");
                     RaisePropertyChanged("SongArtist");
                     RaisePropertyChanged("SongBitRate");
@@ -208,23 +216,24 @@ namespace NeteaseMusicDownloader.ViewModels
                         playlistId = reg.Groups[1].Value;
                         foreach (var song in await NeteaseUtil.GetSongsFromPlaylist(playlistId))
                         {
-                            song.PlaylistDownloadCommand = new RelayCommand(() =>
-                            {
-                                string trackUrl = NeteaseUtil.GetTrackURL(song.DfsId);
-                                if (string.IsNullOrWhiteSpace(trackUrl))
-                                    return;
-                                var downloader = Application.Current.Resources["MyDownload"] as DownloadUtils;
-                                downloader.DownloadProgressChanged += (sender, args) =>
-                                {
-                                    Progress = args.ProgressPercentage;
-                                    BytesReceived = args.BytesReceived;
-                                    TotalBytesToReceive = args.TotalBytesToReceive;
-                                };
-                                downloader.Get(trackUrl, Path.Combine("music", FileUtils.GetSafeFileName(song.SongFileName)));
-                            });
                             SongCollection.Add(song);
                         }
                     }
+                });
+
+                PlaylistDownloadCommand = new RelayCommand<Song>((song) =>
+                {
+                    string trackUrl = NeteaseUtil.GetTrackURL(song.DfsId);
+                    if (string.IsNullOrWhiteSpace(trackUrl))
+                        return;
+                    var downloader = new DownloadUtils();
+                    downloader.DownloadProgressChanged += (sender, args) =>
+                    {
+                        song.Progress = args.ProgressPercentage;
+                        BytesReceived = args.BytesReceived;
+                        TotalBytesToReceive = args.TotalBytesToReceive;
+                    };
+                    downloader.Get(trackUrl, Path.Combine("music", FileUtils.GetSafeFileName(song.SongFileName)));
                 });
             }
         }
