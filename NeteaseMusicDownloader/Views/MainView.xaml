@@ -41,7 +41,8 @@
         <Label x:Name="label4" Content="Artist" Margin="1" Grid.Row="5" Grid.Column="1" VerticalContentAlignment="Center" />
         <Label x:Name="label5" Content="{Binding SongArtist}" Margin="1" Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
         <Label x:Name="label6" Content="BitRate" Margin="1" Grid.Row="6" Grid.Column="1" VerticalContentAlignment="Center" />
-        <Label x:Name="label7" Content="{Binding SongBitRate}" Margin="1" Grid.Column="2" Grid.Row="6" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
+        <Label x:Name="label7" Content="{Binding SongBitRate}" Margin="1" Grid.Column="2" Grid.Row="6" VerticalContentAlignment="Center" />
+        <CheckBox x:Name="checkBox" Content="Next" Grid.Column="3" Margin="1" Grid.Row="6"  VerticalContentAlignment="Center" HorizontalAlignment="Right" IsChecked="{Binding DownloadNext}" />
         <StatusBar VerticalAlignment="Bottom" Grid.ColumnSpan="5" Grid.Row="9">
             <ProgressBar Height="14" Width="100" Value="{Binding Progress, Mode=OneWay}" Maximum="100" LargeChange="1" />
             <Label x:Name="label8" Content="{Binding BytesReceived}" />

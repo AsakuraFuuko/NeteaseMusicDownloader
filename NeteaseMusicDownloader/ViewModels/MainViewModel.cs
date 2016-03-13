@@ -43,6 +43,8 @@ namespace NeteaseMusicDownloader.ViewModels
         private Song _song = new Song();
         public string Title { get; set; }
 
+        public bool DownloadNext { get; set; }
+
         public string PlaylistUrl
         {
             get { return _playlistUrl; }
@@ -244,6 +246,12 @@ namespace NeteaseMusicDownloader.ViewModels
                         BytesReceived = args.BytesReceived.ToString();
                         TotalBytesToReceive = args.TotalBytesToReceive.ToString();
                     };
+                    downloader.DownloadFileCompleted += (sender, args) =>
+                    {
+                        Progress = 0;
+                        BytesReceived = "0";
+                        TotalBytesToReceive = "0";
+                    };
                     downloader.Get(TrackUrl, Path.Combine("music", FileUtils.GetSafeFileName(_song.SongFileName)));
                 });
 
@@ -276,6 +284,22 @@ namespace NeteaseMusicDownloader.ViewModels
                         BytesReceived = args.BytesReceived.ToString();
                         TotalBytesToReceive = args.TotalBytesToReceive.ToString();
                     };
+                    downloader.DownloadFileCompleted += (sender, args) =>
+                    {
+                        if (DownloadNext)
+                        {
+                            int index = -1;
+                            if ((index = SongCollection.IndexOf(song)) != -1 && index + 1 < SongCollection.Count)
+                            {
+                                PlaylistDownloadCommand.Execute(SongCollection.ElementAt(index + 1));
+                            }
+                        }
+                        else
+                        {
+                            BytesReceived = "0";
+                            TotalBytesToReceive = "0";
+                        }
+                    };
                     downloader.Get(trackUrl, Path.Combine("music", FileUtils.GetSafeFileName(song.SongFileName)));
                 });
 
@@ -291,8 +315,27 @@ namespace NeteaseMusicDownloader.ViewModels
                             audioPlayback.Stop();
                             CurrentPlaySong.PlayStatus = PlayStatus.Play;
                         }
+
+                        audioPlayback.EndCallback += (handle, channel, data, user) =>
+                        {
+                            int index = -1;
+                            if ((index = SongCollection.IndexOf(song)) != -1)
+                            {
+                                ListenCommand.Execute(SongCollection.ElementAt((index + 1) % SongCollection.Count));
+                            }
+                            else
+                            {
+                                audioPlayback.Stop();
+                                NowPlaying = "";
+                                song.PlayStatus = PlayStatus.Play;
+                                timer.Enabled = false;
+                                timer.Stop();
+                            }
+                        };
+
                         audioPlayback.Load(trackUrl);
                         audioPlayback.Play();
+
                         CurrentPlaySong = song;
                         NowPlaying = string.Format("Now Playing {0} - {1}", song.Artist, song.Title);
                         timer.Enabled = true;
@@ -304,7 +347,8 @@ namespace NeteaseMusicDownloader.ViewModels
                         audioPlayback.Stop();
                         NowPlaying = "";
                         song.PlayStatus = PlayStatus.Play;
-                        //timer.Enabled = false;
+                        timer.Enabled = false;
+                        timer.Stop();
                     }
                 });
             }

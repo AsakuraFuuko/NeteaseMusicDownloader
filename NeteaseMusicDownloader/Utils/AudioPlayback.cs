@@ -58,6 +58,10 @@ namespace NeteaseMusicDownloader.Utils
         {
             if (BassHelper.IsInitialized && fileStream != 0 && Bass.BASS_ChannelIsActive(fileStream) != BASSActive.BASS_ACTIVE_PLAYING)
             {
+                if (EndCallback != null)
+                {
+                    Bass.BASS_ChannelSetSync(fileStream, BASSSync.BASS_SYNC_END | BASSSync.BASS_SYNC_MIXTIME, 0, EndCallback, IntPtr.Zero);
+                }
                 Bass.BASS_ChannelPlay(fileStream, Bass.BASS_ChannelIsActive(fileStream) != BASSActive.BASS_ACTIVE_PAUSED);
             }
         }
@@ -117,5 +121,7 @@ namespace NeteaseMusicDownloader.Utils
                 }
             }
         }
+
+        public SYNCPROC EndCallback { get; set; }
     }
 }
