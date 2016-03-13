@@ -43,17 +43,17 @@ namespace NeteaseMusicDownloader.Models
         {
             get
             {
-                if (HMucis != null)
+                if (HMusic != null)
                 {
-                    return HMucis.Extension;
+                    return HMusic.Extension;
                 }
-                else if (MMucis != null)
+                else if (MMusic != null)
                 {
-                    return MMucis.Extension;
+                    return MMusic.Extension;
                 }
-                else if (LMucis != null)
+                else if (LMusic != null)
                 {
-                    return LMucis.Extension;
+                    return LMusic.Extension;
                 }
                 else
                 {
@@ -66,17 +66,17 @@ namespace NeteaseMusicDownloader.Models
         {
             get
             {
-                if (HMucis != null)
+                if (HMusic != null)
                 {
-                    return HMucis.dfsId;
+                    return HMusic.dfsId;
                 }
-                else if (MMucis != null)
+                else if (MMusic != null)
                 {
-                    return MMucis.dfsId;
+                    return MMusic.dfsId;
                 }
-                else if (LMucis != null)
+                else if (LMusic != null)
                 {
-                    return LMucis.dfsId;
+                    return LMusic.dfsId;
                 }
                 else
                 {
@@ -87,11 +87,11 @@ namespace NeteaseMusicDownloader.Models
 
         public string AlbumImage { get; set; }
 
-        public Music HMucis { get; set; }
+        public Music HMusic { get; set; }
 
-        public Music MMucis { get; set; }
+        public Music MMusic { get; set; }
 
-        public Music LMucis { get; set; }
+        public Music LMusic { get; set; }
 
         public int Progress
         {

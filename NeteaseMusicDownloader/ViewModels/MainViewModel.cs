@@ -97,7 +97,7 @@ namespace NeteaseMusicDownloader.ViewModels
 
         public string SongBitRate
         {
-            get { return _song.HMucis != null ? _song.HMucis.BitRate / 1000 + "k" : ""; }
+            get { return _song.HMusic != null ? _song.HMusic.BitRate / 1000 + "k" : ""; }
         }
 
         public int Progress

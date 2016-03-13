@@ -46,7 +46,7 @@ namespace NeteaseMusicDownloader.Utils
                 song.Title = jObject.SelectToken("songs[0].name").ToString();
                 song.Artist = jObject.SelectToken("songs[0].artists[0].name").ToString();
                 if (jObject.SelectToken("songs[0].hMusic") != null)
-                    song.HMucis = new Music()
+                    song.HMusic = new Music()
                     {
                         Name = jObject.SelectToken("songs[0].hMusic.name").ToString(),
                         Extension = jObject.SelectToken("songs[0].hMusic.extension").ToString(),
@@ -54,7 +54,7 @@ namespace NeteaseMusicDownloader.Utils
                         dfsId = jObject.SelectToken("songs[0].hMusic.dfsId").ToString(),
                     };
                 if (jObject.SelectToken("songs[0].mMusic") != null)
-                    song.MMucis = new Music()
+                    song.MMusic = new Music()
                     {
                         Name = jObject.SelectToken("songs[0].mMusic.name").ToString(),
                         Extension = jObject.SelectToken("songs[0].mMusic.extension").ToString(),
@@ -62,7 +62,7 @@ namespace NeteaseMusicDownloader.Utils
                         dfsId = jObject.SelectToken("songs[0].mMusic.dfsId").ToString(),
                     };
                 if (jObject.SelectToken("songs[0].lMusic") != null)
-                    song.LMucis = new Music()
+                    song.LMusic = new Music()
                     {
                         Name = jObject.SelectToken("songs[0].lMusic.name").ToString(),
                         Extension = jObject.SelectToken("songs[0].lMusic.extension").ToString(),
@@ -93,7 +93,7 @@ namespace NeteaseMusicDownloader.Utils
                             AlbumImage = item.SelectToken("album.picUrl").ToString(),
                         };
                         if (item.SelectToken("hMusic.name") != null)
-                            song.HMucis = new Music()
+                            song.HMusic = new Music()
                             {
                                 Name = item.SelectToken("hMusic.name").ToString(),
                                 Extension = item.SelectToken("hMusic.extension").ToString(),
@@ -101,7 +101,7 @@ namespace NeteaseMusicDownloader.Utils
                                 dfsId = item.SelectToken("hMusic.dfsId").ToString(),
                             };
                         if (item.SelectToken("mMusic.name") != null)
-                            song.MMucis = new Music()
+                            song.MMusic = new Music()
                             {
                                 Name = item.SelectToken("mMusic.name").ToString(),
                                 Extension = item.SelectToken("mMusic.extension").ToString(),
@@ -109,7 +109,7 @@ namespace NeteaseMusicDownloader.Utils
                                 dfsId = item.SelectToken("mMusic.dfsId").ToString(),
                             };
                         if (item.SelectToken("lMusic.name") != null)
-                            song.LMucis = new Music()
+                            song.LMusic = new Music()
                             {
                                 Name = item.SelectToken("lMusic.name").ToString(),
                                 Extension = item.SelectToken("lMusic.extension").ToString(),
