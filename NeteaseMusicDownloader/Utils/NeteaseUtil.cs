@@ -35,16 +35,23 @@ namespace NeteaseMusicDownloader.Utils
             return string.Format(baseUrl, result, dfsid);
         }
 
-        public static void GetSongDetail(ref Song song)
+        public async static Task<IEnumerable<Song>> GetSongDetail(string id)
         {
+            var list = new List<Song>();
             string url = "http://music.163.com/api/song/detail?ids=[{0}]";
             using (WebClient client = new WebClient() { Encoding = Encoding.UTF8 })
             {
-                string json = client.DownloadString(string.Format(url, song.MusicId));
+                string json = await client.DownloadStringTaskAsync(string.Format(url, id));
                 JObject jObject = JObject.Parse(json);
 
-                song.Title = jObject.SelectToken("songs[0].name").ToString();
-                song.Artist = jObject.SelectToken("songs[0].artists[0].name").ToString();
+                var song = new Song()
+                {
+                    Title = jObject.SelectToken("songs[0].name").ToString(),
+                    Artist = jObject.SelectToken("songs[0].artists[0].name").ToString(),
+                    MusicId = jObject.SelectToken("songs[0].id").ToString(),
+                    AlbumImage = jObject.SelectToken("songs[0].album.picUrl").ToString(),
+                };
+
                 if (jObject.SelectToken("songs[0].hMusic") != null)
                     song.HMusic = new Music()
                     {
@@ -69,16 +76,120 @@ namespace NeteaseMusicDownloader.Utils
                         BitRate = jObject.SelectToken("songs[0].lMusic.bitrate").ToObject<int>(),
                         dfsId = jObject.SelectToken("songs[0].lMusic.dfsId").ToString(),
                     };
+                list.Add(song);
             }
+            return list;
         }
 
-        public async static Task<IEnumerable<Song>> GetSongsFromPlaylist(string playlistId)
+        public async static Task<IEnumerable<Song>> GetSongsFromPlaylist(string id)
         {
             var list = new List<Song>();
             string url = "http://music.163.com/api/playlist/detail?id={0}";
             using (WebClient client = new WebClient() { Encoding = Encoding.UTF8 })
             {
-                string json = await client.DownloadStringTaskAsync(string.Format(url, playlistId));
+                string json = await client.DownloadStringTaskAsync(string.Format(url, id));
+                JObject jObject = JObject.Parse(json);
+                var result = jObject["result"];
+                if (result != null)
+                {
+                    foreach (var item in result["tracks"])
+                    {
+                        var song = new Song()
+                        {
+                            Title = item.SelectToken("name").ToString(),
+                            Artist = item.SelectToken("artists[0].name").ToString(),
+                            MusicId = item.SelectToken("id").ToString(),
+                            AlbumImage = item.SelectToken("album.picUrl").ToString(),
+                        };
+                        if (item.SelectToken("hMusic.name") != null)
+                            song.HMusic = new Music()
+                            {
+                                Name = item.SelectToken("hMusic.name").ToString(),
+                                Extension = item.SelectToken("hMusic.extension").ToString(),
+                                BitRate = item.SelectToken("hMusic.bitrate").ToObject<int>(),
+                                dfsId = item.SelectToken("hMusic.dfsId").ToString(),
+                            };
+                        if (item.SelectToken("mMusic.name") != null)
+                            song.MMusic = new Music()
+                            {
+                                Name = item.SelectToken("mMusic.name").ToString(),
+                                Extension = item.SelectToken("mMusic.extension").ToString(),
+                                BitRate = item.SelectToken("mMusic.bitrate").ToObject<int>(),
+                                dfsId = item.SelectToken("mMusic.dfsId").ToString(),
+                            };
+                        if (item.SelectToken("lMusic.name") != null)
+                            song.LMusic = new Music()
+                            {
+                                Name = item.SelectToken("lMusic.name").ToString(),
+                                Extension = item.SelectToken("lMusic.extension").ToString(),
+                                BitRate = item.SelectToken("lMusic.bitrate").ToObject<int>(),
+                                dfsId = item.SelectToken("lMusic.dfsId").ToString(),
+                            };
+                        list.Add(song);
+                    }
+                }
+                return list;
+            }
+        }
+
+        public async static Task<IEnumerable<Song>> GetSongsFromAlbum(string id)
+        {
+            var list = new List<Song>();
+            string url = "http://music.163.com/api/album/{0}";
+            using (WebClient client = new WebClient() { Encoding = Encoding.UTF8, Headers = new WebHeaderCollection() { { HttpRequestHeader.Referer, "http://music.163.com/" }, { HttpRequestHeader.Cookie, "appver=1.5.0.75771;" } } })
+            {
+                string json = await client.DownloadStringTaskAsync(string.Format(url, id));
+                JObject jObject = JObject.Parse(json);
+                var result = jObject["album"];
+                if (result != null)
+                {
+                    foreach (var item in result["songs"])
+                    {
+                        var song = new Song()
+                        {
+                            Title = item.SelectToken("name").ToString(),
+                            Artist = item.SelectToken("artists[0].name").ToString(),
+                            MusicId = item.SelectToken("id").ToString(),
+                            AlbumImage = item.SelectToken("album.picUrl").ToString(),
+                        };
+                        if (item.SelectToken("hMusic.name") != null)
+                            song.HMusic = new Music()
+                            {
+                                Name = item.SelectToken("hMusic.name").ToString(),
+                                Extension = item.SelectToken("hMusic.extension").ToString(),
+                                BitRate = item.SelectToken("hMusic.bitrate").ToObject<int>(),
+                                dfsId = item.SelectToken("hMusic.dfsId").ToString(),
+                            };
+                        if (item.SelectToken("mMusic.name") != null)
+                            song.MMusic = new Music()
+                            {
+                                Name = item.SelectToken("mMusic.name").ToString(),
+                                Extension = item.SelectToken("mMusic.extension").ToString(),
+                                BitRate = item.SelectToken("mMusic.bitrate").ToObject<int>(),
+                                dfsId = item.SelectToken("mMusic.dfsId").ToString(),
+                            };
+                        if (item.SelectToken("lMusic.name") != null)
+                            song.LMusic = new Music()
+                            {
+                                Name = item.SelectToken("lMusic.name").ToString(),
+                                Extension = item.SelectToken("lMusic.extension").ToString(),
+                                BitRate = item.SelectToken("lMusic.bitrate").ToObject<int>(),
+                                dfsId = item.SelectToken("lMusic.dfsId").ToString(),
+                            };
+                        list.Add(song);
+                    }
+                }
+                return list;
+            }
+        }
+
+        public async static Task<IEnumerable<Song>> GetSongsFromArtist(string id)
+        {
+            var list = new List<Song>();
+            string url = "http://music.163.com/api/artist/albums/{0}?&limit=9999";
+            using (WebClient client = new WebClient() { Encoding = Encoding.UTF8, Headers = new WebHeaderCollection() { { HttpRequestHeader.Referer, "http://music.163.com/" }, { HttpRequestHeader.Cookie, "appver=1.5.0.75771;" } } })
+            {
+                string json = await client.DownloadStringTaskAsync(string.Format(url, id));
                 JObject jObject = JObject.Parse(json);
                 var result = jObject["result"];
                 if (result != null)

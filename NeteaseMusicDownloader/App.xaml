@@ -10,7 +10,6 @@
     <Application.Resources>
         <ResourceDictionary>
             <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:NeteaseMusicDownloader.ViewModels" />
-            <util:DownloadUtils x:Key="MyDownload" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

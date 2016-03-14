@@ -85,6 +85,29 @@ namespace NeteaseMusicDownloader.Models
             }
         }
 
+        public string BitRate
+        {
+            get
+            {
+                if (HMusic != null)
+                {
+                    return HMusic.BitRate / 1000 + "k";
+                }
+                else if (MMusic != null)
+                {
+                    return MMusic.BitRate / 1000 + "k";
+                }
+                else if (LMusic != null)
+                {
+                    return LMusic.BitRate / 1000 + "k";
+                }
+                else
+                {
+                    return "0k";
+                }
+            }
+        }
+
         public string AlbumImage { get; set; }
 
         public Music HMusic { get; set; }

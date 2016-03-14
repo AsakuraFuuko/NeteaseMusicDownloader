@@ -115,6 +115,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Behaviors\ScrollIntoViewBehavior.cs" />
     <Compile Include="Models\Music.cs" />
     <Compile Include="Models\Song.cs" />
     <Compile Include="Utils\AudioPlayback.cs" />
