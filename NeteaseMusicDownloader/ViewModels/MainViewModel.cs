@@ -65,6 +65,7 @@ namespace NeteaseMusicDownloader.ViewModels
             {
                 _songCollection = value;
                 RaisePropertyChanged("SongCollection");
+                RaisePropertyChanged("TotalCount");
             }
         }
 
@@ -111,6 +112,11 @@ namespace NeteaseMusicDownloader.ViewModels
                 _totalBytesToReceive = value;
                 RaisePropertyChanged("TotalBytesToReceive");
             }
+        }
+
+        public int TotalCount
+        {
+            get { return _songCollection.Count; }
         }
 
         public string NowPlaying
@@ -201,13 +207,13 @@ namespace NeteaseMusicDownloader.ViewModels
             {
                 // Code runs "for real"
                 Title = _title;
-                NeteaseUrl = "http://music.163.com/#/my/m/music/playlist?id=6435531";
+                NeteaseUrl = "http://music.163.com/#/playlist?id=409730857";
                 Progress = 0;
                 audioPlayback = new AudioPlayback();
 
                 timer.Tick += (sender, args) =>
                 {
-                    Title = string.Format("{0} {1}/{2}", _title, audioPlayback.CurrentLength, audioPlayback.TotalLength);
+                    Title = string.Format("{0}/{1} - {2}/{3} - {4}", CurrentPlaySong.Title, CurrentPlaySong.Artist, audioPlayback.CurrentLength, audioPlayback.TotalLength, _title);
                     RaisePropertyChanged("Title");
                 };
 
@@ -229,6 +235,7 @@ namespace NeteaseMusicDownloader.ViewModels
                                 foreach (var song in await NeteaseUtil.GetSongsFromAlbum(id))
                                 {
                                     SongCollection.Add(song);
+                                    RaisePropertyChanged("TotalCount");
                                 }
                                 break;
 
@@ -236,6 +243,7 @@ namespace NeteaseMusicDownloader.ViewModels
                                 foreach (var song in await NeteaseUtil.GetSongsFromArtist(id))
                                 {
                                     SongCollection.Add(song);
+                                    RaisePropertyChanged("TotalCount");
                                 }
                                 break;
 
@@ -243,6 +251,7 @@ namespace NeteaseMusicDownloader.ViewModels
                                 foreach (var song in await NeteaseUtil.GetSongsFromPlaylist(id))
                                 {
                                     SongCollection.Add(song);
+                                    RaisePropertyChanged("TotalCount");
                                 }
                                 break;
 
@@ -250,6 +259,7 @@ namespace NeteaseMusicDownloader.ViewModels
                                 foreach (var song in await NeteaseUtil.GetSongDetail(id))
                                 {
                                     SongCollection.Add(song);
+                                    RaisePropertyChanged("TotalCount");
                                 }
                                 break;
                         }

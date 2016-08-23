@@ -42,7 +42,8 @@
         <CheckBox x:Name="checkBox" Content="Next" Grid.Column="3" Margin="1" Grid.Row="5"  VerticalContentAlignment="Center" HorizontalAlignment="Right" IsChecked="{Binding DownloadNext}" />
         <StatusBar VerticalAlignment="Bottom" Grid.ColumnSpan="5" Grid.Row="8">
             <!--<ProgressBar Height="14" Width="100" Value="{Binding Progress, Mode=OneWay}" Maximum="100" LargeChange="1" />-->
-            <Label x:Name="label8" Content="{Binding BytesReceived}" />
+            <Label x:Name="label8" Content="{Binding TotalCount}" />
+            <Label x:Name="label18" Content="{Binding BytesReceived}" />
             <Label x:Name="label9" Content="/" />
             <Label x:Name="label10" Content="{Binding TotalBytesToReceive}" />
             <StatusBarItem HorizontalContentAlignment="Right">

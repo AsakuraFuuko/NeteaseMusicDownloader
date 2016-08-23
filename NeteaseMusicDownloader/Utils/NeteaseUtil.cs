@@ -97,7 +97,7 @@ namespace NeteaseMusicDownloader.Utils
                         var song = new Song()
                         {
                             Title = item.SelectToken("name").ToString(),
-                            Artist = item.SelectToken("artists[0].name").ToString(),
+                            Artist = string.Join(" ", item.SelectToken("artists").Select(p => p.SelectToken("name")).Values<string>()),
                             MusicId = item.SelectToken("id").ToString(),
                             AlbumImage = item.SelectToken("album.picUrl").ToString(),
                         };
@@ -148,7 +148,7 @@ namespace NeteaseMusicDownloader.Utils
                         var song = new Song()
                         {
                             Title = item.SelectToken("name").ToString(),
-                            Artist = item.SelectToken("artists[0].name").ToString(),
+                            Artist = string.Join(" ", item.SelectToken("artists").Select(p => p.SelectToken("name")).Values<string>()),
                             MusicId = item.SelectToken("id").ToString(),
                             AlbumImage = item.SelectToken("album.picUrl").ToString(),
                         };
@@ -199,7 +199,7 @@ namespace NeteaseMusicDownloader.Utils
                         var song = new Song()
                         {
                             Title = item.SelectToken("name").ToString(),
-                            Artist = item.SelectToken("artists[0].name").ToString(),
+                            Artist = string.Join(" ", item.SelectToken("artists").Select(p => p.SelectToken("name")).Values<string>()),
                             MusicId = item.SelectToken("id").ToString(),
                             AlbumImage = item.SelectToken("album.picUrl").ToString(),
                         };
