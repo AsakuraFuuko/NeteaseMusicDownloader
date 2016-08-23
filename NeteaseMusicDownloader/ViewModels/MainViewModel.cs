@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
+using System.Windows.Documents;
 using Un4seen.Bass;
 
 namespace NeteaseMusicDownloader.ViewModels
@@ -172,6 +173,12 @@ namespace NeteaseMusicDownloader.ViewModels
         }
 
         public RelayCommand<Song> ListenCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand<string> OpenTrackUrlCommand
         {
             get;
             private set;
@@ -344,6 +351,10 @@ namespace NeteaseMusicDownloader.ViewModels
                         timer.Enabled = false;
                         timer.Stop();
                     }
+                });
+
+                OpenTrackUrlCommand = new RelayCommand<string>((link) => {
+                    System.Diagnostics.Process.Start(link);
                 });
             }
         }
