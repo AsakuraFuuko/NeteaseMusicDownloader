@@ -15,8 +15,10 @@ namespace NeteaseMusicDownloader.Models
 {
     public class Song : ObservableObject
     {
-        private int _progress = 0;
+        private int _downProgress = 0;
+        private int _playProgress = 0;
         private PlayStatus _playStatus = PlayStatus.Play;
+        private string _songUrl;
 
         public void parseUrl(string url)
         {
@@ -108,6 +110,18 @@ namespace NeteaseMusicDownloader.Models
             }
         }
 
+        public string SongUrl
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_songUrl))
+                {
+                    _songUrl = NeteaseUtil.GetTrackURLNew(MusicId);
+                }
+                return _songUrl;
+            }
+        }
+
         public string AlbumImage { get; set; }
 
         public Music HMusic { get; set; }
@@ -116,13 +130,23 @@ namespace NeteaseMusicDownloader.Models
 
         public Music LMusic { get; set; }
 
-        public int Progress
+        public int DownProgress
         {
-            get { return _progress; }
+            get { return _downProgress; }
             set
             {
-                _progress = value;
-                RaisePropertyChanged("Progress");
+                _downProgress = value;
+                RaisePropertyChanged("DownProgress");
+            }
+        }
+
+        public int PlayProgress
+        {
+            get { return _playProgress; }
+            set
+            {
+                _playProgress = value;
+                RaisePropertyChanged("PlayProgress");
             }
         }
 

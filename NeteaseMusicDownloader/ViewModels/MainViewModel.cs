@@ -56,7 +56,7 @@ namespace NeteaseMusicDownloader.ViewModels
 
         public string SongTrackUrl
         {
-            get { return NeteaseUtil.GetTrackURL(SelectedSong?.DfsId); }
+            get { return SelectedSong?.SongUrl; }
         }
 
         public ObservableCollection<Song> SongCollection
@@ -160,6 +160,24 @@ namespace NeteaseMusicDownloader.ViewModels
             }
         }
 
+
+        public float Volume
+        {
+            get
+            {
+                return Properties.Settings.Default.Volume;
+            }
+            set
+            {
+                if (audioPlayback != null)
+                {
+                    audioPlayback.Volume = value;
+                    Properties.Settings.Default.Volume = audioPlayback.Volume;
+                }
+                RaisePropertyChanged("Volume");
+            }
+        }
+
         public RelayCommand GetSongsCommand
         {
             get;
@@ -179,6 +197,12 @@ namespace NeteaseMusicDownloader.ViewModels
         }
 
         public RelayCommand<string> OpenTrackUrlCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand WindowClosing
         {
             get;
             private set;
@@ -209,12 +233,18 @@ namespace NeteaseMusicDownloader.ViewModels
                     Artist = "榊原ゆい",
                     AlbumImage = "http://p4.music.126.net/n189nEFRefNaucKD8akNQw==/7886796906449604.jpg",
                 });
+                SelectedSong = new Song()
+                {
+                    Title = "キミの隣りで...(絶体絶命都市3 ─壊れゆく街と彼女の歌─)",
+                    Artist = "榊原ゆい",
+                    AlbumImage = "http://p4.music.126.net/n189nEFRefNaucKD8akNQw==/7886796906449604.jpg",
+                };
             }
             else
             {
                 // Code runs "for real"
                 Title = _title;
-                NeteaseUrl = "http://music.163.com/#/playlist?id=409730857";
+                NeteaseUrl = "http://music.163.com/playlist?id=6435531";
                 Progress = 0;
                 audioPlayback = new AudioPlayback();
 
@@ -222,6 +252,7 @@ namespace NeteaseMusicDownloader.ViewModels
                 {
                     Title = string.Format("{0}/{1} - {2}/{3} - {4}", CurrentPlaySong.Title, CurrentPlaySong.Artist, audioPlayback.CurrentLength, audioPlayback.TotalLength, _title);
                     RaisePropertyChanged("Title");
+                    CurrentPlaySong.PlayProgress = (int)audioPlayback.Progress;
                 };
 
                 GetSongsCommand = new RelayCommand(async () =>
@@ -281,7 +312,7 @@ namespace NeteaseMusicDownloader.ViewModels
                     var downloader = new DownloadUtils();
                     downloader.DownloadProgressChanged += (sender, args) =>
                     {
-                        song.Progress = args.ProgressPercentage;
+                        song.DownProgress = args.ProgressPercentage;
                         BytesReceived = args.BytesReceived.ToString();
                         TotalBytesToReceive = args.TotalBytesToReceive.ToString();
                     };
@@ -329,6 +360,7 @@ namespace NeteaseMusicDownloader.ViewModels
                                 audioPlayback.Stop();
                                 NowPlaying = "";
                                 song.PlayStatus = PlayStatus.Play;
+                                song.PlayProgress = 0;
                                 timer.Enabled = false;
                                 timer.Stop();
                             }
@@ -341,6 +373,7 @@ namespace NeteaseMusicDownloader.ViewModels
                         NowPlaying = string.Format("Now Playing {0} - {1}", song.Artist, song.Title);
                         timer.Enabled = true;
                         timer.Start();
+                        song.PlayProgress = 0;
                         song.PlayStatus = PlayStatus.Stop;
                     }
                     else
@@ -348,13 +381,20 @@ namespace NeteaseMusicDownloader.ViewModels
                         audioPlayback.Stop();
                         NowPlaying = "";
                         song.PlayStatus = PlayStatus.Play;
+                        song.PlayProgress = 0;
                         timer.Enabled = false;
                         timer.Stop();
                     }
                 });
 
-                OpenTrackUrlCommand = new RelayCommand<string>((link) => {
+                OpenTrackUrlCommand = new RelayCommand<string>((link) =>
+                {
                     System.Diagnostics.Process.Start(link);
+                });
+
+                WindowClosing = new RelayCommand(() =>
+                {
+                    Properties.Settings.Default.Save();
                 });
             }
         }

@@ -15,5 +15,7 @@ namespace NeteaseMusicDownloader.Models
         public int BitRate { get; set; }
 
         public string dfsId { get; set; }
+
+        public long Size { get; set; }
     }
 }

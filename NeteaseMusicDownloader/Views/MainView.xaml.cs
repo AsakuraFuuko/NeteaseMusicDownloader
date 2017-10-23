@@ -1,4 +1,5 @@
-﻿using NeteaseMusicDownloader.ViewModels;
+﻿using NeteaseMusicDownloader.Utils;
+using NeteaseMusicDownloader.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,12 @@ namespace NeteaseMusicDownloader.Views
         public MainView()
         {
             InitializeComponent();
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            //GlassHelper.ExtendGlassFrame(this, new Thickness(-1));
         }
     }
 }

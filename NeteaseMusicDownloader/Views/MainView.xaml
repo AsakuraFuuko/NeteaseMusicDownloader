@@ -11,10 +11,16 @@
         xmlns:behaviors = "clr-namespace:NeteaseMusicDownloader.Behaviors"
         mc:Ignorable="d"
         DataContext="{Binding Main,Source={StaticResource Locator}}"
-        Title="{Binding Title}" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Height="420" Width="600">
+        Title="{Binding Title}" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Height="450" Width="600">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding WindowClosing}" CommandParameter="{Binding}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="10" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
@@ -43,9 +49,12 @@
         <Label x:Name="label4" Content="Artist" Margin="1" Grid.Row="4" Grid.Column="1" VerticalContentAlignment="Center" />
         <Label x:Name="label5" Content="{Binding SongArtist}" Margin="1" Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
         <Label x:Name="label6" Content="BitRate" Margin="1" Grid.Row="5" Grid.Column="1" VerticalContentAlignment="Center" />
-        <Label x:Name="label7" Content="{Binding SongBitRate}" Margin="1" Grid.Column="2" Grid.Row="5" VerticalContentAlignment="Center" />
-        <CheckBox x:Name="checkBox" Content="Next" Grid.Column="3" Margin="1" Grid.Row="5"  VerticalContentAlignment="Center" HorizontalAlignment="Right" IsChecked="{Binding DownloadNext}" />
-        <StatusBar VerticalAlignment="Bottom" Grid.ColumnSpan="5" Grid.Row="8">
+        <Label x:Name="label31" Content="Volume" Margin="1" Grid.Row="6" Grid.Column="1" VerticalContentAlignment="Center" />
+        <Grid Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2">
+            <Label x:Name="label7" Margin="1" VerticalContentAlignment="Center" Content="{Binding SongBitRate}" />
+            <CheckBox x:Name="checkBox" Content="Next" HorizontalAlignment="Right" VerticalContentAlignment="Center" IsChecked="{Binding DownloadNext}" Margin="0,0,5,0" />
+        </Grid>
+        <StatusBar VerticalAlignment="Bottom" Grid.ColumnSpan="5" Grid.Row="9">
             <!--<ProgressBar Height="14" Width="100" Value="{Binding Progress, Mode=OneWay}" Maximum="100" LargeChange="1" />-->
             <Label x:Name="label8" Content="{Binding TotalCount}" />
             <Label x:Name="label18" Content="{Binding BytesReceived}" />
@@ -58,7 +67,7 @@
         <Button x:Name="button2" Content="Get" Grid.Column="3" Margin="1" Grid.Row="1" Command="{Binding GetSongsCommand}" />
         <Label x:Name="label11" Content="Url" Grid.Column="1" Margin="1" Grid.Row="1" VerticalContentAlignment="Center" />
         <TextBox x:Name="textBox2" Grid.Column="2"  Margin="1" Grid.Row="1" Text="{Binding NeteaseUrl}" VerticalContentAlignment="Center" />
-        <ListView x:Name="listView1" Grid.ColumnSpan="3" Grid.Column="1" Margin="1" Grid.Row="6" ItemsSource="{Binding SongCollection}" SelectedItem="{Binding SelectedSong}">
+        <ListView x:Name="listView1" Grid.ColumnSpan="3" Grid.Column="1" Margin="1" Grid.Row="7" ItemsSource="{Binding SongCollection}" SelectedItem="{Binding SelectedSong}">
             <i:Interaction.Behaviors>
                 <behaviors:ScrollIntoViewBehavior />
             </i:Interaction.Behaviors>
@@ -81,13 +90,23 @@
                             <ColumnDefinition Width="60" />
                             <ColumnDefinition Width="60" />
                         </Grid.ColumnDefinitions>
-                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Grid.ZIndex="0" Width="Auto" Background="{x:Null}" BorderBrush="{x:Null}">
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding DownProgress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Grid.ZIndex="0" Width="Auto" Background="{x:Null}" BorderBrush="{x:Null}">
                             <ProgressBar.Foreground>
                                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                     <GradientStop Color="#4C79FF92" Offset="0.794" />
                                     <GradientStop Color="#4CFFFFFF" Offset="1" />
                                     <GradientStop Color="#4CFFFFFF" />
                                     <GradientStop Color="#7F7CFF94" Offset="0.629" />
+                                </LinearGradientBrush>
+                            </ProgressBar.Foreground>
+                        </ProgressBar>
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayProgress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Grid.ZIndex="0" Width="Auto" Background="{x:Null}" BorderBrush="{x:Null}">
+                            <ProgressBar.Foreground>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="#4CFF7979" Offset="0.794" />
+                                    <GradientStop Color="#4CFFFFFF" Offset="1" />
+                                    <GradientStop Color="#4CFFFFFF" />
+                                    <GradientStop Color="#7FFF7C7C" Offset="0.629" />
                                 </LinearGradientBrush>
                             </ProgressBar.Foreground>
                         </ProgressBar>
@@ -102,5 +121,6 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Slider Grid.Column="2" Grid.Row="6" VerticalAlignment="Center" Maximum="1" Value="{Binding Volume}" LargeChange="0.1" TickFrequency="0.1" TickPlacement="BottomRight"/>
     </Grid>
 </Window>
