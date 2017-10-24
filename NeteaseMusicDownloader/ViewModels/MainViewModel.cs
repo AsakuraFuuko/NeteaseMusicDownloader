@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using NeteaseMusicDownloader.Models;
 using NeteaseMusicDownloader.Utils;
+using NLog;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -28,6 +29,7 @@ namespace NeteaseMusicDownloader.ViewModels
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         readonly private string _title = "Netease Music Downloader";
         private string _neteaseUrl;
         private int _progress = 0;
@@ -38,7 +40,7 @@ namespace NeteaseMusicDownloader.ViewModels
         private AudioPlayback audioPlayback;
         private string _nowPlaying = "";
         private ObservableCollection<Song> _songCollection = new ObservableCollection<Song>();
-        private BASSTimer timer = new BASSTimer(100);
+        private BASSTimer timer = new BASSTimer(1000);
 
         public string Title { get; set; }
 
@@ -256,23 +258,25 @@ namespace NeteaseMusicDownloader.ViewModels
                 audioPlayback.Volume = Volume;
                 audioPlayback.EndCallback += (handle, channel, data, user) =>
                 {
-                    audioPlayback.Stop();
-                    NowPlaying = "";
-                    CurrentPlaySong.PlayProgress = 0;
-                    CurrentPlaySong.PlayStatus = PlayStatus.Play;
-                    timer.Enabled = false;
-                    timer.Stop();
-
                     int index = -1;
                     if ((index = SongCollection.IndexOf(CurrentPlaySong)) != -1)
                     {
                         ListenCommand.Execute(SongCollection.ElementAt((index + 1) % SongCollection.Count));
                     }
+                    else
+                    {
+                        audioPlayback.Stop();
+                        NowPlaying = "";
+                        CurrentPlaySong.PlayProgress = 0;
+                        CurrentPlaySong.PlayStatus = PlayStatus.Play;
+                        timer.Enabled = false;
+                        timer.Stop();
+                    }
                 };
 
                 timer.Tick += (sender, args) =>
                 {
-                    Title = string.Format("{0}/{1} - {2}/{3} - {4}", CurrentPlaySong.Title, CurrentPlaySong.Artists, audioPlayback.CurrentLength, audioPlayback.TotalLength, _title);
+                    Title = string.Format("{0}/{1} - {2}", audioPlayback.CurrentLength, audioPlayback.TotalLength, _title);
                     RaisePropertyChanged("Title");
                     CurrentPlaySong.PlayProgress = audioPlayback.Progress;
                 };

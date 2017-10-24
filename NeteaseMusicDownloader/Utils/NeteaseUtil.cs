@@ -1,5 +1,6 @@
 ﻿using NeteaseMusicDownloader.Models;
 using Newtonsoft.Json.Linq;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -16,6 +17,7 @@ namespace NeteaseMusicDownloader.Utils
 {
     public class NeteaseUtil
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         #region old
         public static readonly string baseUrl = "http://m1.music.126.net/{0}/{1}.mp3";
 
@@ -425,7 +427,7 @@ namespace NeteaseMusicDownloader.Utils
                 };
                 var postEncData = Encrypt(postData);
                 var json = await client.UploadStringTaskAsync(url, "POST", postEncData.ToString());
-                Debug.Write(json);
+                logger.Debug(json);
                 if (!string.IsNullOrWhiteSpace(json))
                 {
                     JObject jObject = JObject.Parse(json.ToString());
@@ -504,7 +506,7 @@ namespace NeteaseMusicDownloader.Utils
                 };
                 var postEncData = Encrypt(postData);
                 var json = await client.UploadStringTaskAsync(url, "POST", postEncData.ToString());
-                Debug.Write(json);
+                logger.Debug(json);
                 if (!string.IsNullOrWhiteSpace(json))
                 {
                     JObject jObject = JObject.Parse(json.ToString());
@@ -580,7 +582,7 @@ namespace NeteaseMusicDownloader.Utils
                 };
                 var postEncData = Encrypt(postData);
                 var json = client.UploadString(url, "POST", postEncData.ToString());
-                Debug.Write(json);
+                logger.Debug(json);
                 if (!string.IsNullOrWhiteSpace(json))
                 {
                     JObject jObject = JObject.Parse(json.ToString());

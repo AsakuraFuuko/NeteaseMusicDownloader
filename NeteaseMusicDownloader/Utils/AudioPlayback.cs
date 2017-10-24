@@ -24,7 +24,7 @@ namespace NeteaseMusicDownloader.Utils
 
         public void Load(string fileName)
         {
-            CloseFile();
+            //CloseFile();
             OpenFile(fileName);
         }
 
@@ -51,6 +51,7 @@ namespace NeteaseMusicDownloader.Utils
             if (fileStream != 0)
             {
                 Bass.BASS_StreamFree(fileStream);
+                Bass.BASS_Free();
                 fileStream = 0;
             }
         }
@@ -82,7 +83,7 @@ namespace NeteaseMusicDownloader.Utils
 
         public void Pause()
         {
-            if (BassHelper.IsInitialized)
+            if (BassHelper.IsInitialized && fileStream != 0)
             {
                 Bass.BASS_ChannelPause(fileStream);
             }
@@ -90,7 +91,7 @@ namespace NeteaseMusicDownloader.Utils
 
         public void Stop()
         {
-            if (BassHelper.IsInitialized)
+            if (BassHelper.IsInitialized && fileStream != 0)
             {
                 Bass.BASS_ChannelStop(fileStream);
             }

@@ -124,7 +124,7 @@ namespace NeteaseMusicDownloader.Models
         {
             get
             {
-                return MusicNew.Url;
+                return MusicNew?.Url;
             }
         }
 

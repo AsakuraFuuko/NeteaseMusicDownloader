@@ -1,7 +1,9 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,11 +19,13 @@ namespace NeteaseMusicDownloader
     /// </summary>
     public partial class App : Application
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         private const string _downloadFolder = "music";
         //private const string _cacheFolder = "cache";
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            AppDomain.CurrentDomain.UnhandledException += MyHandler;
             // Select the text in a TextBox when it receives focus.
             EventManager.RegisterClassHandler(typeof(TextBox), TextBox.PreviewMouseLeftButtonDownEvent,
                 new MouseButtonEventHandler(SelectivelyIgnoreMouseButton));
@@ -71,6 +75,14 @@ namespace NeteaseMusicDownloader
             var textBox = e.OriginalSource as TextBox;
             if (textBox != null)
                 textBox.SelectAll();
+        }
+
+        private static void MyHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            var ex = (Exception)args.ExceptionObject;
+            logger.Error("UnhandledException caught : " + ex.Message);
+            logger.Error("UnhandledException StackTrace : " + ex.StackTrace);
+            logger.Fatal("Runtime terminating: {0}", args.IsTerminating);
         }
     }
 }
