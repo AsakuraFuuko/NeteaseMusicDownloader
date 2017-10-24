@@ -17,5 +17,7 @@ namespace NeteaseMusicDownloader.Models
         public string dfsId { get; set; }
 
         public long Size { get; set; }
+
+        public string Url { get; set; }
     }
 }

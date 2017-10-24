@@ -16,9 +16,9 @@ namespace NeteaseMusicDownloader.Models
     public class Song : ObservableObject
     {
         private int _downProgress = 0;
-        private int _playProgress = 0;
+        private double _playProgress = 0;
         private PlayStatus _playStatus = PlayStatus.Play;
-        private string _songUrl;
+        private Music _musicNew;
 
         public void parseUrl(string url)
         {
@@ -37,15 +37,21 @@ namespace NeteaseMusicDownloader.Models
 
         public string MusicId { get; set; }
 
-        public string Title { get; set; }
+        public Title Title { get; set; }
 
-        public string Artist { get; set; }
+        public Artists Artists { get; set; }
+
+        public Album Album { get; set; }
 
         public string Extension
         {
             get
             {
-                if (HMusic != null)
+                if (MusicNew != null)
+                {
+                    return MusicNew.Extension;
+                }
+                else if (HMusic != null)
                 {
                     return HMusic.Extension;
                 }
@@ -91,7 +97,11 @@ namespace NeteaseMusicDownloader.Models
         {
             get
             {
-                if (HMusic != null)
+                if (MusicNew != null)
+                {
+                    return MusicNew.BitRate / 1000 + "k";
+                }
+                else if (HMusic != null)
                 {
                     return HMusic.BitRate / 1000 + "k";
                 }
@@ -114,15 +124,21 @@ namespace NeteaseMusicDownloader.Models
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(_songUrl))
-                {
-                    _songUrl = NeteaseUtil.GetTrackURLNew(MusicId);
-                }
-                return _songUrl;
+                return MusicNew.Url;
             }
         }
 
-        public string AlbumImage { get; set; }
+        public Music MusicNew
+        {
+            get
+            {
+                if (_musicNew == null)
+                {
+                    _musicNew = NeteaseUtil.GetTrackDetialNew(MusicId);
+                }
+                return _musicNew;
+            }
+        }
 
         public Music HMusic { get; set; }
 
@@ -140,7 +156,7 @@ namespace NeteaseMusicDownloader.Models
             }
         }
 
-        public int PlayProgress
+        public double PlayProgress
         {
             get { return _playProgress; }
             set
@@ -152,7 +168,7 @@ namespace NeteaseMusicDownloader.Models
 
         public string SongFileName
         {
-            get { return string.Format("{0} - {1}.{2}", Artist, Title, Extension); }
+            get { return string.Format("{0} - {1}.{2}", Artists, Title, Extension); }
         }
 
         public PlayStatus PlayStatus

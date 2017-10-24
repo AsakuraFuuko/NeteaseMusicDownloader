@@ -24,6 +24,7 @@ namespace NeteaseMusicDownloader.Utils
 
         public void Load(string fileName)
         {
+            CloseFile();
             OpenFile(fileName);
         }
 
@@ -49,7 +50,7 @@ namespace NeteaseMusicDownloader.Utils
         {
             if (fileStream != 0)
             {
-                BassHelper.Free();
+                Bass.BASS_StreamFree(fileStream);
                 fileStream = 0;
             }
         }

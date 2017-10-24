@@ -2,8 +2,8 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="NeteaseMusicDownloader.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="Volume" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">0.7</Value>
+    <Setting Name="Volume" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">70</Value>
     </Setting>
   </Settings>
 </SettingsFile>

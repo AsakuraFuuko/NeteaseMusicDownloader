@@ -43,18 +43,34 @@ namespace NeteaseMusicDownloader.Utils
         public async static Task<IEnumerable<Song>> GetSongDetail(string id)
         {
             var list = new List<Song>();
-            string url = "http://music.163.com/api/song/detail?ids=[{0}]";
-            using (WebClient client = new WebClient() { Encoding = Encoding.UTF8 })
+            string url = "/api/song/detail?ids=[{0}]";
+            using (WebClient client = CreateClient())
             {
                 string json = await client.DownloadStringTaskAsync(string.Format(url, id));
                 JObject jObject = JObject.Parse(json);
 
                 var song = new Song()
                 {
-                    Title = jObject.SelectToken("songs[0].name").ToString(),
-                    Artist = jObject.SelectToken("songs[0].artists[0].name").ToString(),
+                    Title = new Title
+                    {
+                        Id = jObject.SelectToken("songs[0].id").ToString(),
+                        Name = jObject.SelectToken("songs[0].name").ToString()
+                    },
+                    Artists = new Artists
+                    {
+                        Data = jObject.SelectToken("songs[0].artists").Select(ar => new Artist
+                        {
+                            Name = ar["name"].ToString(),
+                            Id = ar["id"].ToString()
+                        }).ToList()
+                    },
                     MusicId = jObject.SelectToken("songs[0].id").ToString(),
-                    AlbumImage = jObject.SelectToken("songs[0].album.picUrl").ToString(),
+                    Album = new Album
+                    {
+                        Id = jObject.SelectToken("songs[0].album.id").ToString(),
+                        Name = jObject.SelectToken("songs[0].album.name").ToString(),
+                        Image = jObject.SelectToken("songs[0].album.picUrl").ToString()
+                    },
                 };
 
                 if (jObject.SelectToken("songs[0].hMusic") != null)
@@ -89,8 +105,8 @@ namespace NeteaseMusicDownloader.Utils
         public async static Task<IEnumerable<Song>> GetSongsFromPlaylist(string id)
         {
             var list = new List<Song>();
-            string url = "http://music.163.com/api/playlist/detail?id={0}";
-            using (WebClient client = new WebClient() { Encoding = Encoding.UTF8 })
+            string url = "/api/playlist/detail?id={0}";
+            using (WebClient client = CreateClient())
             {
                 string json = await client.DownloadStringTaskAsync(string.Format(url, id));
                 JObject jObject = JObject.Parse(json);
@@ -101,10 +117,26 @@ namespace NeteaseMusicDownloader.Utils
                     {
                         var song = new Song()
                         {
-                            Title = item.SelectToken("name").ToString(),
-                            Artist = string.Join(" ", item.SelectToken("artists").Select(p => p.SelectToken("name")).Values<string>()),
+                            Title = new Title
+                            {
+                                Id = item.SelectToken("id").ToString(),
+                                Name = item.SelectToken("name").ToString()
+                            },
+                            Artists = new Artists
+                            {
+                                Data = item.SelectToken("artists").Select(ar => new Artist
+                                {
+                                    Name = ar["name"].ToString(),
+                                    Id = ar["id"].ToString()
+                                }).ToList()
+                            },
                             MusicId = item.SelectToken("id").ToString(),
-                            AlbumImage = item.SelectToken("album.picUrl").ToString(),
+                            Album = new Album
+                            {
+                                Id = item.SelectToken("album.id").ToString(),
+                                Name = item.SelectToken("album.name").ToString(),
+                                Image = item.SelectToken("album.picUrl").ToString()
+                            },
                         };
                         if (item.SelectToken("hMusic.name") != null)
                             song.HMusic = new Music()
@@ -140,8 +172,8 @@ namespace NeteaseMusicDownloader.Utils
         public async static Task<IEnumerable<Song>> GetSongsFromAlbum(string id)
         {
             var list = new List<Song>();
-            string url = "http://music.163.com/api/album/{0}";
-            using (WebClient client = new WebClient() { Encoding = Encoding.UTF8, Headers = new WebHeaderCollection() { { HttpRequestHeader.Referer, "http://music.163.com/" }, { HttpRequestHeader.Cookie, "appver=1.5.0.75771;" } } })
+            string url = "/api/album/{0}";
+            using (WebClient client = CreateClient())
             {
                 string json = await client.DownloadStringTaskAsync(string.Format(url, id));
                 JObject jObject = JObject.Parse(json);
@@ -152,10 +184,26 @@ namespace NeteaseMusicDownloader.Utils
                     {
                         var song = new Song()
                         {
-                            Title = item.SelectToken("name").ToString(),
-                            Artist = string.Join(" ", item.SelectToken("artists").Select(p => p.SelectToken("name")).Values<string>()),
+                            Title = new Title
+                            {
+                                Id = item.SelectToken("id").ToString(),
+                                Name = item.SelectToken("name").ToString()
+                            },
+                            Artists = new Artists
+                            {
+                                Data = item.SelectToken("artists").Select(ar => new Artist
+                                {
+                                    Name = ar["name"].ToString(),
+                                    Id = ar["id"].ToString()
+                                }).ToList()
+                            },
                             MusicId = item.SelectToken("id").ToString(),
-                            AlbumImage = item.SelectToken("album.picUrl").ToString(),
+                            Album = new Album
+                            {
+                                Id = item.SelectToken("album.id").ToString(),
+                                Name = item.SelectToken("album.name").ToString(),
+                                Image = item.SelectToken("album.picUrl").ToString()
+                            },
                         };
                         if (item.SelectToken("hMusic.name") != null)
                             song.HMusic = new Music()
@@ -191,8 +239,8 @@ namespace NeteaseMusicDownloader.Utils
         public async static Task<IEnumerable<Song>> GetSongsFromArtist(string id)
         {
             var list = new List<Song>();
-            string url = "http://music.163.com/api/artist/{0}?&limit=9999";
-            using (WebClient client = new WebClient() { Encoding = Encoding.UTF8, Headers = new WebHeaderCollection() { { HttpRequestHeader.Referer, "http://music.163.com/" }, { HttpRequestHeader.Cookie, "appver=1.5.0.75771;" } } })
+            string url = "/api/artist/{0}?&limit=9999";
+            using (WebClient client = CreateClient())
             {
                 string json = await client.DownloadStringTaskAsync(string.Format(url, id));
                 JObject jObject = JObject.Parse(json);
@@ -203,10 +251,26 @@ namespace NeteaseMusicDownloader.Utils
                     {
                         var song = new Song()
                         {
-                            Title = item.SelectToken("name").ToString(),
-                            Artist = string.Join(" ", item.SelectToken("artists").Select(p => p.SelectToken("name")).Values<string>()),
+                            Title = new Title
+                            {
+                                Id = item.SelectToken("id").ToString(),
+                                Name = item.SelectToken("name").ToString()
+                            },
+                            Artists = new Artists
+                            {
+                                Data = item.SelectToken("artists").Select(ar => new Artist
+                                {
+                                    Name = ar["name"].ToString(),
+                                    Id = ar["id"].ToString()
+                                }).ToList()
+                            },
                             MusicId = item.SelectToken("id").ToString(),
-                            AlbumImage = item.SelectToken("album.picUrl").ToString(),
+                            Album = new Album
+                            {
+                                Id = item.SelectToken("album.id").ToString(),
+                                Name = item.SelectToken("album.name").ToString(),
+                                Image = item.SelectToken("album.picUrl").ToString()
+                            },
                         };
                         if (item.SelectToken("hMusic.name") != null)
                             song.HMusic = new Music()
@@ -238,7 +302,6 @@ namespace NeteaseMusicDownloader.Utils
                 return list;
             }
         }
-
         #endregion
 
         #region new 
@@ -246,10 +309,10 @@ namespace NeteaseMusicDownloader.Utils
         private static readonly string NONCE = "0CoJUm6Qyw8W8jud";
         private static readonly string PUB_KEY = "010001";
 
-        private static String CreateSecretKey(Int16 length)
+        private static string CreateSecretKey(int length)
         {
-            String secretKey = String.Empty;
-            String pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            string secretKey = string.Empty;
+            string pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             Random random = new Random();
 
             for (Int16 i = 0; i < length; i++)
@@ -261,7 +324,7 @@ namespace NeteaseMusicDownloader.Utils
             return secretKey;
         }
 
-        private static String AESEncrypt(String str, String key)
+        private static string AESEncrypt(string str, string key)
         {
             AesManaged aesManaged = new AesManaged()
             {
@@ -306,9 +369,9 @@ namespace NeteaseMusicDownloader.Utils
                 Headers = new WebHeaderCollection
                 {
                     { "Referer", "http://music.163.com" },
-                    { "Cookie", "appver=2.0.2; os=pc;" },
+                    { "Cookie", "os=linux;" },
                     { "Content-Type", "application/x-www-form-urlencoded" },
-                    { "X-Real-IP", "220.181.57.217" }
+                    { "X-Real-IP", "27.38.4.87" }
                 },
                 BaseAddress = "http://music.163.com"
             };
@@ -345,61 +408,6 @@ namespace NeteaseMusicDownloader.Utils
             }
         }
 
-        public async static Task<IEnumerable<Song>> GetSongDetailNew(string id)
-        {
-            var list = new List<Song>();
-            string url = "/weapi/v3/song/detail";
-            using (WebClient client = CreateClient())
-            {
-                JObject postData = new JObject
-                {
-                    { "c", "[{\"id\":" + id + "}]" },
-                    { "csrf_token", "" }
-                };
-                var postEncData = Encrypt(postData);
-                var json = await client.UploadStringTaskAsync(url, "POST", postEncData.ToString());
-                Debug.Write(json);
-                if (!string.IsNullOrWhiteSpace(json))
-                {
-                    JObject jObject = JObject.Parse(json.ToString());
-                    var playlist = jObject["playlist"];
-                    if (playlist != null)
-                    {
-                        foreach (var item in playlist["tracks"])
-                        {
-                            var song = new Song()
-                            {
-                                Title = item.SelectToken("name").ToString(),
-                                Artist = string.Join(" ", item.SelectToken("ar").Select(p => p.SelectToken("name")).Values<string>()),
-                                MusicId = item.SelectToken("id").ToString(),
-                                AlbumImage = item.SelectToken("al.picUrl").ToString(),
-                            };
-                            if (item.SelectToken("h.size") != null)
-                                song.HMusic = new Music()
-                                {
-                                    BitRate = item.SelectToken("h.br").ToObject<int>(),
-                                    Size = item.SelectToken("h.size").ToObject<long>(),
-                                };
-                            if (item.SelectToken("m.size") != null)
-                                song.MMusic = new Music()
-                                {
-                                    BitRate = item.SelectToken("m.br").ToObject<int>(),
-                                    Size = item.SelectToken("m.size").ToObject<long>(),
-                                };
-                            if (item.SelectToken("l.name") != null)
-                                song.LMusic = new Music()
-                                {
-                                    BitRate = item.SelectToken("l.br").ToObject<int>(),
-                                    Size = item.SelectToken("l.size").ToObject<long>(),
-                                };
-                            list.Add(song);
-                        }
-                    }
-                }
-                return list;
-            }
-        }
-
         public async static Task<IEnumerable<Song>> GetSongsFromPlaylistNew(string id)
         {
             var list = new List<Song>();
@@ -426,12 +434,32 @@ namespace NeteaseMusicDownloader.Utils
                     {
                         foreach (var item in playlist["tracks"])
                         {
+                            //if (item.SelectToken("privilege.pl").ToObject<int>() == 0)
+                            //{
+                            //    continue;
+                            //}
                             var song = new Song()
                             {
-                                Title = item.SelectToken("name").ToString(),
-                                Artist = string.Join(" ", item.SelectToken("ar").Select(p => p.SelectToken("name")).Values<string>()),
+                                Title = new Title
+                                {
+                                    Id = item.SelectToken("id").ToString(),
+                                    Name = item.SelectToken("name").ToString()
+                                },
+                                Artists = new Artists
+                                {
+                                    Data = item.SelectToken("ar").Select(ar => new Artist
+                                    {
+                                        Name = ar["name"].ToString(),
+                                        Id = ar["id"].ToString()
+                                    }).ToList()
+                                },
                                 MusicId = item.SelectToken("id").ToString(),
-                                AlbumImage = item.SelectToken("al.picUrl").ToString(),
+                                Album = new Album
+                                {
+                                    Id = item.SelectToken("al.id").ToString(),
+                                    Name = item.SelectToken("al.name").ToString(),
+                                    Image = item.SelectToken("al.picUrl").ToString()
+                                },
                             };
                             if (item.SelectToken("h.size") != null)
                                 song.HMusic = new Music()
@@ -459,9 +487,88 @@ namespace NeteaseMusicDownloader.Utils
             }
         }
 
-        public static string GetTrackURLNew(string id, int br = 999000)
+        public async static Task<IEnumerable<Song>> SearchSongs(string keywords)
         {
-            string link = null;
+            var list = new List<Song>();
+            string url = "/weapi/cloudsearch/get/web";
+            using (WebClient client = CreateClient())
+            {
+                JObject postData = new JObject
+                {
+                    { "s", keywords },
+                    { "type", 1 },
+                    { "total", true },
+                    { "limit", 100 },
+                    { "offset", 0 },
+                    { "csrf_token", "" }
+                };
+                var postEncData = Encrypt(postData);
+                var json = await client.UploadStringTaskAsync(url, "POST", postEncData.ToString());
+                Debug.Write(json);
+                if (!string.IsNullOrWhiteSpace(json))
+                {
+                    JObject jObject = JObject.Parse(json.ToString());
+                    var result = jObject["result"];
+                    if (result != null)
+                    {
+                        foreach (var item in result["songs"])
+                        {
+                            if (item.SelectToken("privilege.pl").ToObject<int>() == 0)
+                            {
+                                continue;
+                            }
+                            var song = new Song()
+                            {
+                                Title = new Title
+                                {
+                                    Id = item.SelectToken("id").ToString(),
+                                    Name = item.SelectToken("name").ToString()
+                                },
+                                Artists = new Artists
+                                {
+                                    Data = item.SelectToken("ar").Select(ar => new Artist
+                                    {
+                                        Name = ar["name"].ToString(),
+                                        Id = ar["id"].ToString()
+                                    }).ToList()
+                                },
+                                MusicId = item.SelectToken("id").ToString(),
+                                Album = new Album
+                                {
+                                    Id = item.SelectToken("al.id").ToString(),
+                                    Name = item.SelectToken("al.name").ToString(),
+                                    Image = item.SelectToken("al.picUrl").ToString()
+                                },
+                            };
+                            if (item.SelectToken("h.size") != null)
+                                song.HMusic = new Music()
+                                {
+                                    BitRate = item.SelectToken("h.br").ToObject<int>(),
+                                    Size = item.SelectToken("h.size").ToObject<long>(),
+                                };
+                            if (item.SelectToken("m.size") != null)
+                                song.MMusic = new Music()
+                                {
+                                    BitRate = item.SelectToken("m.br").ToObject<int>(),
+                                    Size = item.SelectToken("m.size").ToObject<long>(),
+                                };
+                            if (item.SelectToken("l.name") != null)
+                                song.LMusic = new Music()
+                                {
+                                    BitRate = item.SelectToken("l.br").ToObject<int>(),
+                                    Size = item.SelectToken("l.size").ToObject<long>(),
+                                };
+                            list.Add(song);
+                        }
+                    }
+                }
+                return list;
+            }
+        }
+
+        public static Music GetTrackDetialNew(string id, int br = 999000)
+        {
+            Music music = null;
             string url = "/weapi/song/enhance/player/url";
             using (WebClient client = CreateClient())
             {
@@ -480,11 +587,17 @@ namespace NeteaseMusicDownloader.Utils
                     var data = jObject["data"];
                     if (data.Count() > 0)
                     {
-                        link = data[0]["url"].ToString();
+                        music = new Music
+                        {
+                            Url = data[0]["url"].ToString(),
+                            BitRate = data[0]["br"].ToObject<int>(),
+                            Size = data[0]["size"].ToObject<long>(),
+                            Extension = data[0]["type"].ToString(),
+                        };
                     }
                 }
             }
-            return link;
+            return music;
         }
         #endregion
     }

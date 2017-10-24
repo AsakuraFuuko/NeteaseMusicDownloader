@@ -118,12 +118,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Behaviors\ScrollIntoViewBehavior.cs" />
+    <Compile Include="Models\Album.cs" />
+    <Compile Include="Models\Artist.cs" />
     <Compile Include="Models\Music.cs" />
     <Compile Include="Models\Song.cs" />
+    <Compile Include="Models\Title.cs" />
     <Compile Include="Utils\AeroGlass.cs" />
     <Compile Include="Utils\AudioPlayback.cs" />
     <Compile Include="Utils\DownloadUtils.cs" />
     <Compile Include="Utils\FileUtils.cs" />
+    <Compile Include="Utils\FormattedSlider.cs" />
     <Compile Include="Utils\NeteaseUtil.cs" />
     <Compile Include="Utils\RSA.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

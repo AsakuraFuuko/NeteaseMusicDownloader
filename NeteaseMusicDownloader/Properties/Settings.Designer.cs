@@ -25,10 +25,10 @@ namespace NeteaseMusicDownloader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.7")]
-        public float Volume {
+        [global::System.Configuration.DefaultSettingValueAttribute("70")]
+        public int Volume {
             get {
-                return ((float)(this["Volume"]));
+                return ((int)(this["Volume"]));
             }
             set {
                 this["Volume"] = value;

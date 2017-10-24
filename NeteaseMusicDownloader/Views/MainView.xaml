@@ -9,6 +9,7 @@
         xmlns:cachedImage="clr-namespace:CachedImage;assembly=CachedImage"
         xmlns:util ="clr-namespace:NeteaseMusicDownloader.Utils"
         xmlns:behaviors = "clr-namespace:NeteaseMusicDownloader.Behaviors"
+        xmlns:m = "clr-namespace:NeteaseMusicDownloader.Models"
         mc:Ignorable="d"
         DataContext="{Binding Main,Source={StaticResource Locator}}"
         Title="{Binding Title}" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Height="450" Width="600">
@@ -38,22 +39,63 @@
             <ColumnDefinition Width="10" />
         </Grid.ColumnDefinitions>
         <TextBlock Margin="1" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" >
-            <Hyperlink NavigateUri="{Binding SongTrackUrl, Mode=OneWay}" Command="{Binding OpenTrackUrlCommand}" CommandParameter="{Binding SongTrackUrl, Mode=OneWay}">
+            <Hyperlink NavigateUri="{Binding SongTrackUrl, Mode=OneWay}" TextDecorations="None">
+                <Hyperlink.InputBindings>
+                    <MouseBinding Gesture="LeftClick" Command="{Binding OpenUrlCommand}" CommandParameter="{Binding SongTrackUrl, Mode=OneWay}" />
+                    <MouseBinding Gesture="RightClick" Command="{Binding CopyUrlCommand}" CommandParameter="{Binding SongTrackUrl, Mode=OneWay}" />
+                </Hyperlink.InputBindings>
                 <TextBlock Text="{Binding SongTrackUrl, Mode=OneWay}" />
             </Hyperlink>
         </TextBlock>
         <!--<TextBox x:Name="textBox1" Margin="1" Text="{Binding SongTrackUrl, Mode=OneWay}" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" />-->
         <Label x:Name="label1" Content="Track Url" Margin="1" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" />
         <Label x:Name="label2" Content="Title" Margin="1" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center" />
-        <Label x:Name="label3" Content="{Binding SongTitle}" Margin="1" Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
+        <TextBlock Margin="1" Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" >
+            <Hyperlink NavigateUri="{Binding SongTitle.Url, Mode=OneWay}"   TextDecorations="None">
+                <Hyperlink.InputBindings>
+                    <MouseBinding Gesture="LeftClick" Command="{Binding OpenUrlCommand}" CommandParameter="{Binding SongTitle.Url, Mode=OneWay}" />
+                    <MouseBinding Gesture="RightClick" Command="{Binding CopyUrlCommand}" CommandParameter="{Binding SongTitle.Url, Mode=OneWay}" />
+                </Hyperlink.InputBindings>
+                <TextBlock Text="{Binding SongTitle.Name, Mode=OneWay}" />
+            </Hyperlink>
+        </TextBlock>
         <Label x:Name="label4" Content="Artist" Margin="1" Grid.Row="4" Grid.Column="1" VerticalContentAlignment="Center" />
-        <Label x:Name="label5" Content="{Binding SongArtist}" Margin="1" Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
-        <Label x:Name="label6" Content="BitRate" Margin="1" Grid.Row="5" Grid.Column="1" VerticalContentAlignment="Center" />
+        <ItemsControl ItemsSource="{Binding SongArtists.Data}" Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Margin="1">
+                        <Hyperlink NavigateUri="{Binding Url, Mode=OneWay}" TextDecorations="None">
+                            <Hyperlink.InputBindings>
+                                <MouseBinding Gesture="LeftClick" Command="{Binding Source={StaticResource Locator}, Path=Main.OpenUrlCommand}" CommandParameter="{Binding Url, Mode=OneWay}" />
+                                <MouseBinding Gesture="RightClick" Command="{Binding Source={StaticResource Locator}, Path=Main.CopyUrlCommand}" CommandParameter="{Binding Url, Mode=OneWay}" />
+                            </Hyperlink.InputBindings>
+                            <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                        </Hyperlink>
+                    </TextBlock>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Label x:Name="label5" Content="{Binding SongArtists}" />
+        <Label x:Name="label6" Content="Album" Margin="1" Grid.Row="5" Grid.Column="1" VerticalContentAlignment="Center" />
         <Label x:Name="label31" Content="Volume" Margin="1" Grid.Row="6" Grid.Column="1" VerticalContentAlignment="Center" />
         <Grid Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2">
-            <Label x:Name="label7" Margin="1" VerticalContentAlignment="Center" Content="{Binding SongBitRate}" />
+            <TextBlock Margin="1" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                <Hyperlink NavigateUri="{Binding SongAlbum.Url, Mode=OneWay}" TextDecorations="None">
+                    <Hyperlink.InputBindings>
+                        <MouseBinding Gesture="LeftClick" Command="{Binding OpenUrlCommand}" CommandParameter="{Binding SongAlbum.Url, Mode=OneWay}" />
+                        <MouseBinding Gesture="RightClick" Command="{Binding CopyUrlCommand}" CommandParameter="{Binding SongAlbum.Url, Mode=OneWay}" />
+                    </Hyperlink.InputBindings>
+                    <TextBlock Text="{Binding SongAlbum.Name, Mode=OneWay}" />
+                </Hyperlink>
+            </TextBlock>
             <CheckBox x:Name="checkBox" Content="Next" HorizontalAlignment="Right" VerticalContentAlignment="Center" IsChecked="{Binding DownloadNext}" Margin="0,0,5,0" />
         </Grid>
+        <Label x:Name="label17" Margin="1" VerticalContentAlignment="Center" Content="{Binding SongBitRate}" Grid.Row="6" Grid.Column="3" HorizontalContentAlignment="Right" />
         <StatusBar VerticalAlignment="Bottom" Grid.ColumnSpan="5" Grid.Row="9">
             <!--<ProgressBar Height="14" Width="100" Value="{Binding Progress, Mode=OneWay}" Maximum="100" LargeChange="1" />-->
             <Label x:Name="label8" Content="{Binding TotalCount}" />
@@ -65,8 +107,12 @@
             </StatusBarItem>
         </StatusBar>
         <Button x:Name="button2" Content="Get" Grid.Column="3" Margin="1" Grid.Row="1" Command="{Binding GetSongsCommand}" />
-        <Label x:Name="label11" Content="Url" Grid.Column="1" Margin="1" Grid.Row="1" VerticalContentAlignment="Center" />
-        <TextBox x:Name="textBox2" Grid.Column="2"  Margin="1" Grid.Row="1" Text="{Binding NeteaseUrl}" VerticalContentAlignment="Center" />
+        <Label x:Name="label11" Content="Url/Search" Grid.Column="1" Margin="1" Grid.Row="1" VerticalContentAlignment="Center" />
+        <TextBox x:Name="textBox2" Grid.Column="2"  Margin="1" Grid.Row="1" Text="{Binding NeteaseUrl, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Return" Command="{Binding GetSongsCommand}"/>
+            </TextBox.InputBindings>
+        </TextBox>
         <ListView x:Name="listView1" Grid.ColumnSpan="3" Grid.Column="1" Margin="1" Grid.Row="7" ItemsSource="{Binding SongCollection}" SelectedItem="{Binding SelectedSong}">
             <i:Interaction.Behaviors>
                 <behaviors:ScrollIntoViewBehavior />
@@ -90,7 +136,7 @@
                             <ColumnDefinition Width="60" />
                             <ColumnDefinition Width="60" />
                         </Grid.ColumnDefinitions>
-                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding DownProgress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Grid.ZIndex="0" Width="Auto" Background="{x:Null}" BorderBrush="{x:Null}">
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding DownProgress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Grid.ZIndex="0" Width="Auto" Background="{x:Null}" BorderBrush="{x:Null}" SmallChange="0.01">
                             <ProgressBar.Foreground>
                                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                     <GradientStop Color="#4C79FF92" Offset="0.794" />
@@ -100,7 +146,7 @@
                                 </LinearGradientBrush>
                             </ProgressBar.Foreground>
                         </ProgressBar>
-                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayProgress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Grid.ZIndex="0" Width="Auto" Background="{x:Null}" BorderBrush="{x:Null}">
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayProgress}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="5" Grid.ZIndex="0" Width="Auto" Background="{x:Null}" BorderBrush="{x:Null}" SmallChange="0.00001">
                             <ProgressBar.Foreground>
                                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                     <GradientStop Color="#4CFF7979" Offset="0.794" />
@@ -110,9 +156,9 @@
                                 </LinearGradientBrush>
                             </ProgressBar.Foreground>
                         </ProgressBar>
-                        <cachedImage:Image ImageUrl="{Binding AlbumImage}" Width="50" Height="50" Grid.RowSpan="2" Grid.Row="0" Grid.Column="0" Margin="2" Grid.ZIndex="1" />
+                        <cachedImage:Image ImageUrl="{Binding Album.Image}" Width="50" Height="50" Grid.RowSpan="2" Grid.Row="0" Grid.Column="0" Margin="2" Grid.ZIndex="1" />
                         <TextBlock Text="Artist: " Grid.Row="0" Grid.Column="1" Margin="3" VerticalAlignment="Center" Grid.ZIndex="1" />
-                        <TextBlock Text="{Binding Artist}" FontWeight="Bold" Grid.Row="0" Grid.Column="2" Margin="3" VerticalAlignment="Center" x:Name="txtAtrist" Grid.ZIndex="1" />
+                        <TextBlock Text="{Binding Artists}" FontWeight="Bold" Grid.Row="0" Grid.Column="2" Margin="3" VerticalAlignment="Center" x:Name="txtAtrist" Grid.ZIndex="1" />
                         <TextBlock Text="Title: " Grid.Row="1" Grid.Column="1" Margin="3" VerticalAlignment="Center" Grid.ZIndex="1" />
                         <TextBlock Text="{Binding Title}" FontWeight="Bold" Grid.Row="3" Grid.Column="2" Margin="3" VerticalAlignment="Center" x:Name="txtTitle" Grid.ZIndex="1" />
                         <Button x:Name="button3" Content="Down" Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" Margin="2" Command="{Binding Source={StaticResource Locator}, Path=Main.PlaylistDownloadCommand}" CommandParameter="{Binding}" Grid.ZIndex="1" Background="#7FDDDDDD" />
@@ -121,6 +167,10 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Slider Grid.Column="2" Grid.Row="6" VerticalAlignment="Center" Maximum="1" Value="{Binding Volume}" LargeChange="0.1" TickFrequency="0.1" TickPlacement="BottomRight"/>
+        <util:FormattedSlider Grid.Column="2" Grid.Row="6" VerticalAlignment="Center" Maximum="100" Value="{Binding Volume}" LargeChange="10" TickFrequency="1" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" AutoToolTipFormat="Volume: {0}%" SmallChange="1">
+            <Slider.ToolTip>
+                <ToolTip Content="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.Value}" ContentStringFormat="Volume: {0:0}%" />
+            </Slider.ToolTip>
+        </util:FormattedSlider>
     </Grid>
 </Window>
