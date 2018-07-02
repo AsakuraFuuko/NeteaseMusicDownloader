@@ -371,9 +371,12 @@ namespace NeteaseMusicDownloader.Utils
                 Headers = new WebHeaderCollection
                 {
                     { "Referer", "http://music.163.com" },
-                    { "Cookie", "os=linux;" },
+                    { "Cookie", "os=pc; " },
+                    { "Accept", "*/*" },
+                    { "Accept-Language", "zh-CN,zh;q=0.8,gl;q=0.6,zh-TW;q=0.4" },
                     { "Content-Type", "application/x-www-form-urlencoded" },
-                    { "X-Real-IP", "27.38.4.87" }
+                    { "User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36" },
+                    { "X-Real-IP", "116.207.118.12" }
                 },
                 BaseAddress = "http://music.163.com"
             };
